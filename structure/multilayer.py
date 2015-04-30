@@ -1,6 +1,3 @@
-# Author: Remy Ko
-# APD Group - Kherani
-
 class Layer:
 
     def __init__(self, wl, n, d, label='untitled', unit='nm'):
@@ -72,8 +69,8 @@ class MultiLayer:
                 self.add_layer(layer)
                 self.wl_range += layer.label + ' ' + layer.wl[0] + ' - ' + \
                                  layer.wl[-1] + ' ' + layer.unit + '\n'
-        self.R = None   #possibly do property: user try to index None
         self.T = None   #possibly do property: user try to index None
+        self.R = None   #possibly do property: user try to index None
         #raise CalculateException in R/T_getter if not self._calculated
         
 
@@ -137,89 +134,41 @@ class MultiLayer:
         '''
         return self._layers_list[index]
 
-    def view(self):
+    def __repr__(self):
         '''
         Return a graphical representation of the structure.
         '''
         if not self._layers_list:
             return ''
-        separator = '\n' + '-' * max([len(layer.view())
+        separator = '\n' + '-' * max([len(layer.__repr__())
                                       for layer in self._layers_list])
         structure_view = '\nTop'
         for layer in self._layers_list[::-1]:
-            structure_view += separator + '\n' + layer.view()
+            structure_view += separator + '\n' + layer.__repr__()
         structure_view += separator + '\n'
-        print structure_view
+        return structure_view
 
-    def calculate(self):
-        #Make this automatic instead of getting the user to start it
-        #(may depend on context)
+    def calculate_TR(self, n0=1.0, ns=1.5):
         '''
         Calculate the reflectance and transmittance of the structure with the
         transfer matrix method.
         '''
         if not self._layers_list:
-            raise EmptyStructureException('No layer exists.')
-        if self.unit == 'nm':
-            wl = self.wl / 1e9
-        if self.unit == 'micron':
-            wl = self.wl / 1e6
-        k0 = 2 * pi / wl
-        temp_n = [layer.n for layer in self._layers_list[::-1]]
-        n = zip(*temp_n)
-        d = [layer.d / 1e9 if self.unit == 'nm' else \
-             layer.d / 1e6 if self.unit == 'micron' else None \
-             for layer in self._layers_list[::-1]]
-        wl_len = len(self.wl)
-        self.R = np.empty(wl_len)
-        self.T = np.empty(wl_len)
-        for i in range(wl_len):
-            self.R[i] = LayerStructure._R(k0[i], n[i], d)
-            self.T[i] = LayerStructure._T(k0[i], n[i], d)
+            raise EmptyStructureException('Structure is empty.')
+        self.T, self.R = calc.TR_spectrum(self, n0, ns)
+        self.A = 1 - self.T - self.R
         self._calculated = True
 
     def _clear_calculation(self):
-        self.R = None
         self.T = None
+        self.R = None
+        self.A = None
         self._calculated = False
 
-    @staticmethod
-    def _R(k0, n, d):
-        return LayerStructure._RT(k0, n, d)[0]
 
-    @staticmethod
-    def _T(k0, n, d):
-        return LayerStructure._RT(k0, n, d)[1]
+class DataFormatException(Exception):
+    pass
 
-    @staticmethod
-    def _M(k0, n, d):
-        assert isinstance(n, (complex, float, int)), "n is not a number"
-        assert isinstance(d, (complex, float, int)), "d is not a number"
-        Y = n * sqrt(eps0 / mu0)
-        return np.array([
-                         [cos(k0 * n * d), 1j * sin(k0 * n * d) / Y],
-                         [1j * Y * sin(k0 * n * d), cos(k0 * n * d)]
-                        ])
 
-    @staticmethod
-    def _RT(k0, n, d):
-        '''For a single wavelength.
-        n an array of refractive index for each layer from top to bottom.
-        d an array of thickness for each layer from top to bottom.
-        '''
-        assert isinstance(n, (np.ndarray, list, tuple)), "n is not an array"
-        assert isinstance(d, (np.ndarray, list, tuple)), "d is not an array"
-        assert len(n) == len(d), "number of layers mismatch between n and d"
-        assert isinstance(n[0], (complex, float, int)), "values in n array not numbers"
-        assert isinstance(d[0], (complex, float, int)), "values in d array not numbers"
-        Y0, Ys = n0 * sqrt(eps0 / mu0), ns * sqrt(eps0 / mu0)
-        Y = n * sqrt(eps0 / mu0)
-        m = 1
-        for i in range(len(n)):
-            m = np.dot(m, LayerStructure._M(k0, n[i], d[i]))
-        r = (Y0 * m[0,0] + Y0 * Ys * m[0,1] - m[1,0] - Ys * m[1,1]) / \
-            (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
-        R = (np.absolute(r))**2
-        t = 2 * Y0 / (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
-        T = (np.absolute(t))**2 * Ys / Y0
-        return R, T
+class EmptyStructureException(Exception):
+    pass

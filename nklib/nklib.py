@@ -1,3 +1,4 @@
+import numpy as np
 import calc
 import multilayer as ml
 
@@ -13,7 +14,7 @@ class Material(ml.Layer):
     and label to create ml.Layer.
     '''
     def __init__(self, thickness, mat_wl, mat_n, label,
-                 wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                 wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                  unit="nm"):
         wl = np.arange(wl_min, wl_max, wl_step)
         n = calc.interpolate(mat_wl, mat_n, wl)
@@ -24,13 +25,13 @@ class Ag(Material):
     '''
     Creates a Layer of silver. Minimum user input is the thickness.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm"):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm"):
         mat_wl = _Ag_wl
         mat_n = _Ag_nk
         label = 'Ag'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -38,13 +39,13 @@ class Al(Material):
     '''
     Creates a Layer of aluminum. Minimum user input is the thickness.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm"):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm"):
         mat_wl = _Al_wl
         mat_n = _Al_nk
         label = 'Al'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -52,13 +53,13 @@ class BK7(Material):
     '''
     Creates a Layer of BK7 glass. Minimum user input is the thickness.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm"):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm"):
         mat_wl = _BK7_wl
         mat_n = _BK7_nk
         label = 'BK7'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -69,8 +70,8 @@ class DLC3W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC3W_ext_wl
             mat_n = _DLC3W_ext_nk
@@ -79,7 +80,7 @@ class DLC3W(Material):
             mat_n = _DLC3W_nk
         label = 'DLC3W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -90,8 +91,8 @@ class DLC5W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC5W_ext_wl
             mat_n = _DLC5W_ext_nk
@@ -100,7 +101,7 @@ class DLC5W(Material):
             mat_n = _DLC5W_nk
         label = 'DLC5W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -111,8 +112,8 @@ class DLC10W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC10W_ext_wl
             mat_n = _DLC10W_ext_nk
@@ -121,7 +122,7 @@ class DLC10W(Material):
             mat_n = _DLC10W_nk
         label = 'DLC10W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -132,8 +133,8 @@ class DLC15W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC15W_ext_wl
             mat_n = _DLC15W_ext_nk
@@ -142,7 +143,7 @@ class DLC15W(Material):
             mat_n = _DLC15W_nk
         label = 'DLC15W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -153,8 +154,8 @@ class DLC20W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC20W_ext_wl
             mat_n = _DLC20W_ext_nk
@@ -163,7 +164,7 @@ class DLC20W(Material):
             mat_n = _DLC20W_nk
         label = 'DLC20W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -174,8 +175,8 @@ class DLC40W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC40W_ext_wl
             mat_n = _DLC40W_ext_nk
@@ -184,7 +185,7 @@ class DLC40W(Material):
             mat_n = _DLC40W_nk
         label = 'DLC40W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -195,8 +196,8 @@ class DLC60W(Material):
     the visible range. nk value from 800nm to 2600nm is exponentially
     extrapolated. See associated image files in the nklib folder.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm", extended=True):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm", extended=True):
         if extended:
             mat_wl = _DLC60W_ext_wl
             mat_n = _DLC60W_ext_nk
@@ -205,7 +206,7 @@ class DLC60W(Material):
             mat_n = _DLC60W_nk
         label = 'DLC60W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
@@ -213,31 +214,36 @@ class ITO(Material):
     '''
     Creates a Layer of ITO. Minimum user input is the thickness.
     '''
-    def __init__(self, thickness, wl_min=wl_min, wl_max=wl_max,
-                 wl_step=wl_step, unit="nm"):
+    def __init__(self, thickness, wl_min=_wl_min, wl_max=_wl_max,
+                 wl_step=_wl_step, unit="nm"):
         mat_wl = _ITO_wl
         mat_n = _ITO_nk
         label = 'ITO'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
-                          wl_min=wl_min, wl_max=wl_max, wl_step=wl_step,
+                          wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                           unit="nm")
 
 
 # Import data
+import os
+os.chdir('C:\\Users\\Remy\\Documents\\GitHub\\opt_sim\\nklib')
+
 _Ag_ndata = np.loadtxt("Ag_n.txt", skiprows=1)
 _Ag_kdata = np.loadtxt("Ag_k.txt", skiprows=1)
-_Ag_wl = Ag_ndata[:,0]
-_Ag_nk = Ag_ndata[:,1] - 1j * Ag_kdata[:,1]
+_Ag_wl = _Ag_ndata[:,0]
+_Ag_nk = _Ag_ndata[:,1] - 1j * _Ag_kdata[:,1]
 
 _Al_ndata = np.loadtxt("Al_n_Rakic1998.txt", skiprows=1)
 _Al_kdata = np.loadtxt("Al_k_Rakic1998.txt", skiprows=1)
-_Al_wl = Al_ndata[:,0]
-_Al_nk = Al_ndata[:,1] - 1j * Al_kdata[:,1]
+_Al_wl = _Al_ndata[:,0]
+_Al_nk = _Al_ndata[:,1] - 1j * _Al_kdata[:,1]
 
 _BK7_ndata = np.loadtxt("BK7_n.txt", skiprows=1)
 _BK7_kdata = np.loadtxt("BK7_k.txt", skiprows=1)
-_BK7_wl = BK7_ndata[:,0]
-_BK7_nk = BK7_ndata[:,0] - 1j * BK7_kdata[:,1]
+_BK7_wl = _BK7_ndata[:,0]
+_wl_temp, _k_temp = _BK7_kdata.transpose()
+_BK7_k = calc.interpolate(_wl_temp, _k_temp, _bk7_wl)
+_BK7_nk = _BK7_ndata[:,1] - 1j * _BK7_k
 
 _DLC_nkdata = [np.loadtxt("DLC{}W_nk.txt".format(n), skiprows=1) for \
                n in [3, 5, 10, 15, 20, 40, 60]]
@@ -256,5 +262,5 @@ _DLC3W_ext_nk, _DLC5W_ext_nk, _DLC10W_ext_nk, _DLC15W_ext_nk, DLC20W_ext_nk, DLC
 
 _ITO_ndata = np.loadtxt("ITO_n_Konig.txt", skiprows=1)
 _ITO_kdata = np.loadtxt("ITO_k_Konig.txt", skiprows=1)
-_ITO_wl = ITO_ndata[:,0]
-_ITO_nk = ITO_ndata[:,0] - 1j * ITO_kdata[:,1]
+_ITO_wl = _ITO_ndata[:,0]
+_ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]

@@ -1,3 +1,4 @@
+from numpy import pi, cos, sin
 import numpy as np
 
 eps0 = 8.85e-12
@@ -31,12 +32,34 @@ def interpolate(wl_raw, f, wl):
                    (wl[i] - wl_raw[j-1])
     return f_new
 
-
-def reflectance(k0, n, d, n0=1.0, ns=1.5):
-    return _RT(k0, n, d)[0]
+def TR_spectrum(struct, n0, ns):
+    '''
+    struct is a multilayer.MultiLayer
+    '''
+    if struct.unit == 'nm':
+        wl = struct.wl / 1e9
+    if struct.unit == 'micron':
+        wl = struct.wl / 1e6
+    k0 = 2 * pi / wl
+    # room for np.ndarray optimization here
+    temp_n = [layer.n for layer in struct._layers_list[::-1]]
+    n = zip(*temp_n)
+    d = [layer.d / 1e9 if struct.unit == 'nm' else \
+         layer.d / 1e6 if struct.unit == 'micron' else None\
+         for layer in struct._layers_list[::-1]]
+    wl_len = len(struct.wl)
+    T = np.empty(wl_len)
+    R = np.empty(wl_len)
+    for i in range(wl_len):
+        T[i] = transmittance(k0[i], n[i], d, n0=n0, ns=ns)
+        R[i] = reflectance(k0[i], n[i], d, n0=n0, ns=ns)
+    return T, R
 
 def transmittance(k0, n, d, n0=1.0, ns=1.5):
-    return _RT(k0, n, d)[1]
+    return _TR(k0, n, d, n0, ns)[0]
+
+def reflectance(k0, n, d, n0=1.0, ns=1.5):
+    return _TR(k0, n, d, n0, ns)[1]
 
 def _transfer_matrix(k0, n, d):
     assert isinstance(n, (complex, float, int)), "n is not a number"
@@ -47,10 +70,11 @@ def _transfer_matrix(k0, n, d):
                      [1j * Y * sin(k0 * n * d), cos(k0 * n * d)]
                     ])
 
-def _RT(k0, n, d, n0=1.0, ns=1.5):
+def _TR(k0, n, d, n0, ns):
     '''
-    n an array of refractive index for each layer from top to bottom.
-    d an array of thickness for each layer from top to bottom.
+    Calculates transmittance and reflectance at a single wavelength.
+    n is an array of refractive index for each layer from top to bottom.
+    d is an array of thickness for each layer from top to bottom.
     '''
     assert isinstance(n, (np.ndarray, list, tuple)), "n is not an array"
     assert isinstance(d, (np.ndarray, list, tuple)), "d is not an array"
@@ -62,9 +86,9 @@ def _RT(k0, n, d, n0=1.0, ns=1.5):
     m = 1
     for i in range(len(n)):
         m = np.dot(m, _transfer_matrix(k0, n[i], d[i]))
+    t = 2 * Y0 / (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
+    T = (np.absolute(t))**2 * Ys / Y0
     r = (Y0 * m[0,0] + Y0 * Ys * m[0,1] - m[1,0] - Ys * m[1,1]) / \
         (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
     R = (np.absolute(r))**2
-    t = 2 * Y0 / (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
-    T = (np.absolute(t))**2 * Ys / Y0
-    return R, T
+    return T, R
