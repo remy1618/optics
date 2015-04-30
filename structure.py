@@ -1,3 +1,5 @@
+import numpy as np
+
 class Layer:
 
     def __init__(self, wl, n, d, label='untitled', unit='nm'):
@@ -17,8 +19,9 @@ class Layer:
                 'Wavelength-dependent refractive index should be given as '
                 'an array, list, or tuple.')
         if len(wl) != len(n):
+            print len(wl), len(n)
             raise DataFormatException(
-                'wl and n should have the same lengths of data.')
+                'wl and n should have the same length of data.')
         if not unit in ['nm', 'micron']:
             raise DataFormatException(
                 "unit should be given as 'nm' or 'micron'")      
@@ -67,8 +70,8 @@ class MultiLayer:
                 raise DataFormatException # or make conversion
             for layer in layer_list:
                 self.add_layer(layer)
-                self.wl_range += layer.label + ' ' + layer.wl[0] + ' - ' + \
-                                 layer.wl[-1] + ' ' + layer.unit + '\n'
+                self.wl_range += layer.label + ' ' + str(layer.wl[0]) + ' - ' \
+                                 + str(layer.wl[-1]) + ' ' + layer.unit + '\n'
         self.T = None   #possibly do property: user try to index None
         self.R = None   #possibly do property: user try to index None
         #raise CalculateException in R/T_getter if not self._calculated

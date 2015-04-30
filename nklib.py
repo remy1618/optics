@@ -1,6 +1,7 @@
+import os
 import numpy as np
 import calc
-import multilayer as ml
+import structure as st
 
 # Default wavelength range in nm
 _wl_min = 305
@@ -8,17 +9,17 @@ _wl_max = 2600
 _wl_step = 5
 
 
-class Material(ml.Layer):
+class Material(st.Layer):
     '''
     Creates a customizable wl array and takes an arbitrary material's nk data
-    and label to create ml.Layer.
+    and label to create st.Layer.
     '''
     def __init__(self, thickness, mat_wl, mat_n, label,
                  wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
                  unit="nm"):
         wl = np.arange(wl_min, wl_max, wl_step)
         n = calc.interpolate(mat_wl, mat_n, wl)
-        ml.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
 
 class Ag(Material):
@@ -99,6 +100,7 @@ class DLC5W(Material):
         else:
             mat_wl = _DLC5W_wl
             mat_n = _DLC5W_nk
+            print len(mat_wl), len(mat_n)
         label = 'DLC5W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
                           wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
@@ -225,24 +227,24 @@ class ITO(Material):
 
 
 # Import data
-import os
-os.chdir('C:\\Users\\Remy\\Documents\\GitHub\\opt_sim\\nklib')
+os.chdir(os.getcwd() + "\\opt_sim\\nklib data") # need to generalize
 
 _Ag_ndata = np.loadtxt("Ag_n.txt", skiprows=1)
 _Ag_kdata = np.loadtxt("Ag_k.txt", skiprows=1)
-_Ag_wl = _Ag_ndata[:,0]
+_Ag_wl = _Ag_ndata[:,0] * 1000
 _Ag_nk = _Ag_ndata[:,1] - 1j * _Ag_kdata[:,1]
 
 _Al_ndata = np.loadtxt("Al_n_Rakic1998.txt", skiprows=1)
 _Al_kdata = np.loadtxt("Al_k_Rakic1998.txt", skiprows=1)
-_Al_wl = _Al_ndata[:,0]
+_Al_wl = _Al_ndata[:,0] * 1000
 _Al_nk = _Al_ndata[:,1] - 1j * _Al_kdata[:,1]
 
 _BK7_ndata = np.loadtxt("BK7_n.txt", skiprows=1)
 _BK7_kdata = np.loadtxt("BK7_k.txt", skiprows=1)
-_BK7_wl = _BK7_ndata[:,0]
-_wl_temp, _k_temp = _BK7_kdata.transpose()
-_BK7_k = calc.interpolate(_wl_temp, _k_temp, _bk7_wl)
+_BK7_wl = _BK7_ndata[:,0] * 1000
+_wl_temp = _BK7_kdata[:,0] * 1000
+_k_temp = _BK7_kdata[:,1]
+_BK7_k = calc.interpolate(_wl_temp, _k_temp, _BK7_wl)
 _BK7_nk = _BK7_ndata[:,1] - 1j * _BK7_k
 
 _DLC_nkdata = [np.loadtxt("DLC{}W_nk.txt".format(n), skiprows=1) for \
@@ -251,6 +253,7 @@ _DLC_wl = [_DLC_nkdata[i][:,0] for i in range(7)]
 _DLC_nk = [_DLC_nkdata[i][:,1] - 1j * _DLC_nkdata[i][:,2] for i in range(7)]
 _DLC3W_wl, _DLC5W_wl, _DLC10W_wl, _DLC15W_wl, DLC20W_wl, DLC40W_wl, DLC60W_wl = _DLC_wl
 _DLC3W_nk, _DLC5W_nk, _DLC10W_nk, _DLC15W_nk, DLC20W_nk, DLC40W_nk, DLC60W_nk = _DLC_nk
+print len(_DLC5W_wl), len(_DLC5W_nk)
 
 _DLC_ext_nkdata = [np.loadtxt("DLC{}W_extended_nk.txt".format(n), skiprows=1) \
                    for n in [3, 5, 10, 15, 20, 40, 60]]
@@ -262,5 +265,5 @@ _DLC3W_ext_nk, _DLC5W_ext_nk, _DLC10W_ext_nk, _DLC15W_ext_nk, DLC20W_ext_nk, DLC
 
 _ITO_ndata = np.loadtxt("ITO_n_Konig.txt", skiprows=1)
 _ITO_kdata = np.loadtxt("ITO_k_Konig.txt", skiprows=1)
-_ITO_wl = _ITO_ndata[:,0]
+_ITO_wl = _ITO_ndata[:,0] * 1000
 _ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]
