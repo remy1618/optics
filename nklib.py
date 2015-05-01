@@ -227,7 +227,7 @@ class ITO(Material):
 
 
 # Import data
-os.chdir(os.getcwd() + "\\opt_sim\\nklib data") # need to generalize
+os.chdir(os.getcwd() + "\\nklib data") # need to generalize
 
 _Ag_ndata = np.loadtxt("Ag_n.txt", skiprows=1)
 _Ag_kdata = np.loadtxt("Ag_k.txt", skiprows=1)

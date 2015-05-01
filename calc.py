@@ -1,4 +1,4 @@
-from numpy import pi, cos, sin
+from numpy import pi, cos, sin, sqrt
 import numpy as np
 
 eps0 = 8.85e-12
@@ -34,7 +34,7 @@ def interpolate(wl_raw, f, wl):
 
 def TR_spectrum(struct, n0, ns):
     '''
-    struct is a multilayer.MultiLayer
+    struct is a structure.MultiLayer
     '''
     if struct.unit == 'nm':
         wl = struct.wl / 1e9
