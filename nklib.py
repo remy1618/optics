@@ -100,7 +100,6 @@ class DLC5W(Material):
         else:
             mat_wl = _DLC5W_wl
             mat_n = _DLC5W_nk
-            print len(mat_wl), len(mat_n)
         label = 'DLC5W'
         Material.__init__(self, thickness, mat_wl, mat_n, label,
                           wl_min=_wl_min, wl_max=_wl_max, wl_step=_wl_step,
@@ -227,7 +226,8 @@ class ITO(Material):
 
 
 # Import data
-os.chdir(os.getcwd() + "\\nklib data") # need to generalize
+os.chdir(os.getcwd() + "\\opt_sim\\nklib data") # possibly generalize
+##os.chdir(os.getcwd() + "\\nklib data")
 
 _Ag_ndata = np.loadtxt("Ag_n.txt", skiprows=1)
 _Ag_kdata = np.loadtxt("Ag_k.txt", skiprows=1)
@@ -253,7 +253,6 @@ _DLC_wl = [_DLC_nkdata[i][:,0] for i in range(7)]
 _DLC_nk = [_DLC_nkdata[i][:,1] - 1j * _DLC_nkdata[i][:,2] for i in range(7)]
 _DLC3W_wl, _DLC5W_wl, _DLC10W_wl, _DLC15W_wl, DLC20W_wl, DLC40W_wl, DLC60W_wl = _DLC_wl
 _DLC3W_nk, _DLC5W_nk, _DLC10W_nk, _DLC15W_nk, DLC20W_nk, DLC40W_nk, DLC60W_nk = _DLC_nk
-print len(_DLC5W_wl), len(_DLC5W_nk)
 
 _DLC_ext_nkdata = [np.loadtxt("DLC{}W_extended_nk.txt".format(n), skiprows=1) \
                    for n in [3, 5, 10, 15, 20, 40, 60]]
