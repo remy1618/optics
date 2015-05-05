@@ -1,24 +1,30 @@
 # opt_sim
-Transfer matrix simulation of 1D optical multilayers
+Transfer matrix simulation of 1D optical multilayers.
 
-Dependecies: numpy, matplotlib
+### Dependecies
 
-To use the library, the python file that imports it should reside in the directory that contains the package opt_sim.
+- [NumPy](http://www.numpy.org/)
+- [matplotlib](http://matplotlib.org/)
 
-Structure:
+### Structure
 
 ```
 .
-opt_sim/
-	__init__.py
-	calc.py
-	nklib.py
-	plot.py
-	structure.py
-	nklib_data\
-		nk data text files
-		DLC data extrapolation figures
+├── opt_sim/
+│	  ├── __init__.py
+│	  ├── calc.py
+│	  ├── nklib.py
+│	  ├── plot.py
+│	  ├── structure.py
+│	  └── nklib_data\
+│		  ├── nk data text files
+│		  └── DLC data extrapolation figures
+└── example_code.py
 ```
+
+### Usage
+
+To use the library, the Python file that imports it should reside in the directory that contains the package `opt_sim`.
 
 Example code and brief documentation for usage of the library.
 
