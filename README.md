@@ -26,7 +26,7 @@ Transfer matrix simulation of 1D optical multilayers.
 
 To use the library, the Python file that imports it should reside in the directory that contains the package `opt_sim`.
 
-Example code and brief documentation for usage of the library.
+Example code and brief documentation for usage of the library:
 
 ```
 # opt_sim is a package that includes several modules. The call signatures in
