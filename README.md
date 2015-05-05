@@ -10,7 +10,7 @@ Transfer matrix simulation of 1D optical multilayers.
 
 ```
 .
-├── opt_sim/
+├── opt_sim\
 │	  ├── __init__.py
 │	  ├── calc.py
 │	  ├── nklib.py
