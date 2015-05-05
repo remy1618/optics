@@ -33,7 +33,7 @@ Example code and brief documentation for usage of the library:
 # the code below shows the organization.
 import opt_sim as opt
 
-# Currently the materials available is
+# Currently the materials available are
 # Ag, Al, BK7, DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W, ITO
 
 # Input thickness for each layer. Default unit is nm
