@@ -13,16 +13,16 @@ class Layer:
         '''
         if not isinstance(wl, (np.ndarray, list, tuple)):
             raise DataFormatException(
-                'A range of wavelengths should be given as an array, list, '
-                'or tuple.')
+                "A range of wavelengths should be given as an array, list, "
+                "or tuple.")
         if not isinstance(n, (np.ndarray, list, tuple)):
             raise DataFormatException(
-                'Wavelength-dependent refractive index should be given as '
-                'an array, list, or tuple.')
+                "Wavelength-dependent refractive index should be given as "
+                "an array, list, or tuple.")
         if len(wl) != len(n):
-            print len(wl), len(n)
             raise DataFormatException(
-                'wl and n should have the same length of data.')
+                "wl and n should have the same length.\nwl " + str(len(wl)) + \
+                "\nn " + str(len(n)))
         if not unit in ['nm', 'micron']:
             raise DataFormatException(
                 "unit should be given as 'nm' or 'micron'")      
@@ -47,71 +47,66 @@ class MultiLayer:
     methods add_layer(), remove_layer(), or replace_layer().
     '''
 
-    def __init__(self, layer_list=[], unit='nm', label=None):
-        # Allow for the constructor call of MultiLayer(some_layer)
-        # instead of MultiLayer([some_layer])
+    def __init__(self, layer_list=[], unit='nm', label=None,
+                 min_wl=200, max_wl=2600, wl_step=5,
+                 n0=1.0, ns=1.5):
+        # Alternate constructor call for convenience
         if isinstance(layer_list, Layer):
             layer_list = [layer_list]
         if not unit in ['nm', 'micron']:
             raise DataFormatException(
                 "unit should be given as 'nm' or 'micron'")
+        for v in [min_wl, max_wl, wl_step]:
+            if not isinstance(v, (int, float)):
+                raise DataFormatException(
+                    "wl bounds should be given as a number. {} given".format(
+                        type(v)))
+        
         self._layers_list = []
-        self.wl_range = ''
-        self._calculated = False
         self.unit = unit
+        self.label = '' if not label else label
+        self._user_label = False if not label else True
+        self.wl_step = wl_step
         self.wl = None
-        if not label:
-            self.label = ''
-            self._user_label = False
-        else:
-            self.label = label
-            self._user_label = True
+        self.wl_by_layer = ''
+        self.n0 = n0
+        self.ns = ns
+        self.T = None   # Do getter control with _TR_calculated
+        self.R = None
+        self.A = None
+        self._TR_calculated = False
+        
         if layer_list:
-            if not all([layer_list[0].unit == layer_list[i].unit for i in range(len(layer_list))]):
-                raise DataFormatException # or make conversion
             for layer in layer_list:
                 self.add_layer(layer)
-                self.wl_range += layer.label + ' ' + str(layer.wl[0]) + ' - ' \
-                                 + str(layer.wl[-1]) + ' ' + layer.unit + '\n'
-        self.T = None   #possibly do property: user try to index None
-        self.R = None   #possibly do property: user try to index None
-        #raise CalculateException in R/T_getter if not self._calculated
+                self.wl_by_layer += layer.label + ' ' + str(layer.wl[0]) + \
+                                    ' - ' + str(layer.wl[-1]) + ' ' + \
+                                    layer.unit + '\n'
         
-
-    def add_layer(self, layer_list, index=None):
+    def add_layer(self, layer, index=None):
         '''
         Add a layer to the top of multilayer if index is not given. Otherwise
         insert a layer indexed from 0.
         '''
-        if isinstance(layer_list, Layer):
-            layer_list = [layer_list]
-        for layer in layer_list:
-            if self.unit != layer.unit:
-                raise DataFormatException(
-                    'Unit mismatch between existing multilayer and new layers.')
+        layer_wl = layer.wl * 1e3 if self.unit == 'nm' and \
+                                     layer.unit == 'micron' else \
+                   layer.wl / 1e3 if self.unit == 'micron' and \
+                                     layer.unit == 'nm' else \
+                   layer.wl
         if not self._layers_list:
-            self.wl = layer.wl
-        if not all([np.allclose(self.wl, layer.wl) for layer in layer_list]):
-            raise DataFormatException(
-                'Wavelength range or interval of the new layer does not '
-                'match that of the existing multilayer.')
-        if isinstance(layer_list, Layer):
-            layer_list = [layer_list]
-        if index is None:
-            for layer in layer_list:
-                self._layers_list.append(layer)
-                if not self._user_label:
-                    if self.label:
-                        self.label += '-'
-                    self.label += layer.label + str(layer.d)
-        else:
-            for i, layer in enumerate(layer_list):
-                self._layers_list.insert(index + i, layer)
-                label_list = self.label.split('-')
-                label_list.insert(index + i, layer.label + str(layer.d))
-                if not self._user_label:
-                    self.label = '-'.join(label_list)
-        self._clear_calculation()
+            self.wl = layer_wl
+        new_min_wl = max(self.wl[0], layer_wl[0])
+        new_max_wl = min(self.wl[-1], layer_wl[-1])
+        self.wl = np.arange(new_min_wl, new_max_wl, self.wl_step)
+                    
+        index = len(self._layers_list) if not index else index
+        self._layers_list.insert(index, layer)
+
+        if not self._user_label:
+            label_list = self.label.split('-') if self.label else []
+            label_list.insert(index, layer.label + str(layer.d))
+            self.label = '-'.join(label_list)
+        self._clear_TR()
     
     def remove_layer(self, index=-1):
         '''
@@ -123,7 +118,7 @@ class MultiLayer:
         label_list.pop(index)
         if not self._user_label:
             self.label = '-'.join(label_list)
-        self._clear_calculation()
+        self._clear_TR()
 
     def replace_layer(self, index, layer):
         '''
@@ -152,22 +147,47 @@ class MultiLayer:
         structure_view += separator + '\n'
         return structure_view
 
-    def calculate_TR(self, n0=1.0, ns=1.5):
+    def calculate_TR(self):
         '''
         Calculate the reflectance and transmittance of the structure with the
-        transfer matrix method.
+        transfer matrix method from calc.py.
         '''
         if not self._layers_list:
-            raise EmptyStructureException('Structure is empty.')
-        self.T, self.R = calc.TR_spectrum(self, n0, ns)
-        self.A = 1 - self.T - self.R
-        self._calculated = True
+            raise EmptyStructureException("Structure is empty.")
 
-    def _clear_calculation(self):
+        # Room for np.ndarray optimization in the following code
+        
+        n_list = []    # Avoid side effect on Layer.n in the MultiLayer
+        # interpolate seems costly. Unsure if obvious optimization exists.
+        for L in self._layers_list:
+            L_wl = L.wl * 1e3 if self.unit == 'nm' and L.unit == 'micron' else\
+                   L.wl / 1e3 if self.unit == 'micron' and L.unit == 'nm' else\
+                   L.wl
+            self.wl, layer_n = calc.interpolate(L_wl, L.n, self.wl)
+            n_list.append(layer_n)
+            
+        wl = self.wl / 1e9 if self.unit == 'nm' else self.wl / 1e6
+        k0 = 2 * np.pi / wl
+        temp_n = [layer.n for layer in self._layers_list[::-1]]
+        n = zip(*n_list[::-1])
+        d = [layer.d / 1e9 if self.unit == 'nm' else layer.d / 1e6 \
+             for layer in self._layers_list[::-1]]
+        wl_len = len(self.wl)
+        self.T = np.empty(wl_len)
+        self.R = np.empty(wl_len)
+        for i in range(wl_len):
+            self.T[i] = calc.transmittance(k0[i], n[i], d,
+                                           n0=self.n0, ns=self.ns)
+            self.R[i] = calc.reflectance(k0[i], n[i], d,
+                                         n0=self.n0, ns=self.ns)
+        self.A = 1 - self.T - self.R
+        self._TR_calculated = True
+
+    def _clear_TR(self):
         self.T = None
         self.R = None
         self.A = None
-        self._calculated = False
+        self._TR_calculated = False
 
 
 class DataFormatException(Exception):
