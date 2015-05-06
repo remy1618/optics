@@ -34,7 +34,7 @@ Example code and brief documentation for usage of the library:
 import opt_sim as opt
 
 # Currently the materials available are
-# Ag, Al, BK7, DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W, ITO
+# Ag, Al, BK7, DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W, ITO, ZnO
 
 # Input thickness for each layer. Default unit is nm
 Ag7 = opt.nklib.Ag(7)
