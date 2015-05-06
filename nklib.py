@@ -153,6 +153,17 @@ class ITO(st.Layer):
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
 
+class ZnO(st.Layer):
+    '''
+    Creates a Layer of ZnO. Minimum user input is the thickness.
+    '''
+    def __init__(self, thickness, unit='nm'):
+        wl = _ZnO_wl / 1e3 if unit == 'micron' else _ZnO_wl
+        n = _ZnO_nk
+        label = 'ZnO'
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+
+
 # Import data
 os.chdir(os.getcwd() + "\\opt_sim\\nklib_data") # possibly generalize
 
@@ -195,3 +206,7 @@ _ITO_ndata = np.loadtxt("ITO_n_Konig.txt", skiprows=1)
 _ITO_kdata = np.loadtxt("ITO_k_Konig.txt", skiprows=1)
 _ITO_wl = _ITO_ndata[:,0] * 1000
 _ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]
+
+_ZnO_nkdata = np.loadtxt("ZnO_nk.txt", skiprows=1)
+_ZnO_wl = _ZnO_nkdata[:,0] * 1000
+_ZnO_nk = _ZnO_nkdata[:,1] - 1j * _ZnO_nkdata[:,2]
