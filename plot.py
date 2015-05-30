@@ -1,8 +1,10 @@
 import matplotlib.pyplot as plt
+import numpy as np
 import structure as st
 import calc
 
-def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm'):
+def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
+       show_solar=False):
     '''
     Plot the reflectance and transmittance curve of given structures in the
     window. If given, min_wl and max_wl sets the wavelength range in the unit
@@ -36,6 +38,12 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm'):
         if 'A' in curves:
             A = 1 - R - T
             plt.plot(wl, A, label=structure.label + ' A')
+    if show_solar:
+        AM1p5_data = np.loadtxt("plot support files\\ASTMG173.txt", skiprows=2)
+        solar_wl = AM1p5_data[:,0]
+        solar_intens = AM1p5_data[:,3]
+        solar_intens /= max(solar_intens)
+        plt.plot(solar_wl, solar_intens, label="AM1.5", color=(0.55,0.55,0.55))
     plt.title('Reflectance and Transmittance plots')
     plt.xlabel('Wavelength ({})'.format(unit))
     if min_wl:

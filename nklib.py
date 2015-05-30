@@ -210,3 +210,5 @@ _ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]
 _ZnO_nkdata = np.loadtxt("ZnO_nk.txt", skiprows=1)
 _ZnO_wl = _ZnO_nkdata[:,0] * 1000
 _ZnO_nk = _ZnO_nkdata[:,1] - 1j * _ZnO_nkdata[:,2]
+
+os.chdir("..")
