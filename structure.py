@@ -163,7 +163,7 @@ class MultiLayer:
             L_wl = L.wl * 1e3 if self.unit == 'nm' and L.unit == 'micron' else\
                    L.wl / 1e3 if self.unit == 'micron' and L.unit == 'nm' else\
                    L.wl
-            self.wl, layer_n = calc.interpolate(L_wl, L.n, self.wl)
+            layer_n = calc.interpolate(L_wl, L.n, self.wl)
             n_list.append(layer_n)
             
         wl = self.wl / 1e9 if self.unit == 'nm' else self.wl / 1e6
