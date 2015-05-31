@@ -183,7 +183,7 @@ _BK7_wl = _BK7_ndata[:,0] * 1000
 # BK7 doesn't have the same number of data points for n and k
 _wl_temp = _BK7_kdata[:,0] * 1000
 _k_temp = _BK7_kdata[:,1]
-_BK7_wl, _BK7_k = calc.interpolate(_wl_temp, _k_temp, _BK7_wl)
+_BK7_k = calc.interpolate(_wl_temp, _k_temp, _BK7_wl)
 _BK7_nk = _BK7_ndata[:,1] - 1j * _BK7_k
 
 _DLC_nkdata = [np.loadtxt("DLC{}W_nk.txt".format(n), skiprows=1) for \

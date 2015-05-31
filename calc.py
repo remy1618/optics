@@ -5,24 +5,12 @@ eps0 = 8.85e-12
 mu0 = 4e-7 * pi
 
 def interpolate(wl_raw, f_raw, wl):
-    ''' Update documentation
+    '''
+    Precondition: wl is within the range of wl_raw
     f is a function of wl_raw.
     wl is the new domain that f is mapped onto via interpolation.
     All inputs are 1darrays.
-    '''
-
-    # These 2 blocks might be unneeded now that structure is modified
-    if wl[0] < wl_raw[0]:
-        i = 1
-        while wl[i] < wl_raw[0]:
-            i += 1
-        wl = wl[i:]
-    if wl[-1] > wl_raw[-1]:
-        i = -2
-        while wl[i] > wl_raw[-1]:
-            i -= 1
-        wl = wl[:i + 1]
-        
+    '''        
     f = np.empty(len(wl), f_raw.dtype)
     for i in range(len(wl)):
         j = 0
@@ -33,30 +21,7 @@ def interpolate(wl_raw, f_raw, wl):
         f[i] = f_raw[j-1] + \
                    (f_raw[j] - f_raw[j-1]) / (wl_raw[j] - wl_raw[j-1]) * \
                    (wl[i] - wl_raw[j-1])
-    return wl, f
-
-def TR_spectrum(struct, n0, ns):
-    '''
-    struct is a structure.MultiLayer
-    '''
-    if struct.unit == 'nm':
-        wl = struct.wl / 1e9
-    if struct.unit == 'micron':
-        wl = struct.wl / 1e6
-    k0 = 2 * pi / wl
-    # room for np.ndarray optimization here
-    temp_n = [layer.n for layer in struct._layers_list[::-1]]
-    n = zip(*temp_n)
-    d = [layer.d / 1e9 if struct.unit == 'nm' else \
-         layer.d / 1e6 if struct.unit == 'micron' else None\
-         for layer in struct._layers_list[::-1]]
-    wl_len = len(struct.wl)
-    T = np.empty(wl_len)
-    R = np.empty(wl_len)
-    for i in range(wl_len):
-        T[i] = transmittance(k0[i], n[i], d, n0=n0, ns=ns)
-        R[i] = reflectance(k0[i], n[i], d, n0=n0, ns=ns)
-    return T, R
+    return f
 
 def transmittance(k0, n, d, n0=1.0, ns=1.5):
     return _TR(k0, n, d, n0, ns)[0]
