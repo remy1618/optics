@@ -4,7 +4,7 @@ import structure as st
 import calc
 
 def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
-       show_solar=False):
+       show_solar=False, legend=True):
     '''
     Plot the reflectance and transmittance curve of given structures in the
     window. If given, min_wl and max_wl sets the wavelength range in the unit
@@ -51,7 +51,8 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
     if max_wl:
         plt.xlim(xmax=max_wl)
     plt.ylim(0, 1)
-    plt.legend(loc=0)
+    if legend:
+        plt.legend(loc=0)
 
 def nk(layer_list, min_wl=None, max_wl=None, curves='nk',sep=False, unit='nm'):
     '''
