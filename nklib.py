@@ -153,6 +153,16 @@ class ITO(st.Layer):
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
 
+class PDMS(st.Layer):
+    '''
+    Creates a Layer of PDMS. Minimum user input is the thickness.
+    '''
+    def __init__(self, thickness, unit='nm'):
+        wl = _PDMS_wl / 1e3 if unit == 'micron' else _PDMS_wl
+        n = _PDMS_nk
+        label = 'PDMS'
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+
 class ZnO(st.Layer):
     '''
     Creates a Layer of ZnO. Minimum user input is the thickness.
@@ -206,6 +216,11 @@ _ITO_ndata = np.loadtxt("ITO_n_Konig.txt", skiprows=1)
 _ITO_kdata = np.loadtxt("ITO_k_Konig.txt", skiprows=1)
 _ITO_wl = _ITO_ndata[:,0] * 1000
 _ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]
+
+_PDMS_nkdata = np.loadtxt("PDMS Refractive Index.csv",
+                          skiprows=1, delimiter=',')
+_PDMS_wl = _PDMS_nkdata[:,0] * 1000
+_PDMS_nk = _PDMS_nkdata[:,1] - 1j * _PDMS_nkdata[:,2]
 
 _ZnO_nkdata = np.loadtxt("ZnO_nk.txt", skiprows=1)
 _ZnO_wl = _ZnO_nkdata[:,0] * 1000
