@@ -142,6 +142,17 @@ class DLC60W(st.Layer):
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
 
+class DLC80WA(st.Layer):
+    '''
+    Creates a Layer of DLC80WA. Minimum user input is the thickness.
+    '''
+    def __init__(self, thickness, unit='nm'):
+        wl = _DLC80WA_wl / 1e3 if unit == 'micron' else _DLC80WA_wl
+        n = _DLC80WA_nk
+        label = 'DLC80WA'
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+
+
 class ITO(st.Layer):
     '''
     Creates a Layer of ITO. Minimum user input is the thickness.
@@ -211,6 +222,10 @@ _DLC_ext_nk = [_DLC_ext_nkdata[i][:,1] - 1j * _DLC_ext_nkdata[i][:,2] \
 _DLC3W_ext_wl, _DLC5W_ext_wl, _DLC10W_ext_wl, _DLC15W_ext_wl, _DLC20W_ext_wl, _DLC40W_ext_wl, _DLC60W_ext_wl = _DLC_ext_wl
 _DLC3W_ext_nk, _DLC5W_ext_nk, _DLC10W_ext_nk, _DLC15W_ext_nk, _DLC20W_ext_nk, _DLC40W_ext_nk, _DLC60W_ext_nk = _DLC_ext_nk
 DLC_list = [DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W]
+
+_DLC80WA_nkdata = np.loadtxt("DLC80WAnode_nk.txt", skiprows=1)
+_DLC80WA_wl = _DLC80WA_nkdata[:,0] * 1000
+_DLC80WA_nk = _DLC80WA_nkdata[:,1] - 1j * _DLC80WA_nkdata[:,2]
 
 _ITO_ndata = np.loadtxt("ITO_n_Konig.txt", skiprows=1)
 _ITO_kdata = np.loadtxt("ITO_k_Konig.txt", skiprows=1)
