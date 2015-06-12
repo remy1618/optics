@@ -1,5 +1,6 @@
 import numpy as np
 import calc
+import os
 
 class Layer:
 
@@ -74,7 +75,10 @@ class MultiLayer:
         self.T = None   # Do getter control with _TR_calculated
         self.R = None
         self.A = None
+        self.T_color = None
+        self.R_color = None
         self._TR_calculated = False
+        self._color_calculated = False
         
         if layer_list:
             for layer in layer_list:
@@ -106,7 +110,7 @@ class MultiLayer:
             label_list = self.label.split('-') if self.label else []
             label_list.insert(index, layer.label + str(layer.d))
             self.label = '-'.join(label_list)
-        self._clear_TR()
+        self._clear_calculations()
     
     def remove_layer(self, index=-1):
         '''
@@ -118,7 +122,7 @@ class MultiLayer:
         label_list.pop(index)
         if not self._user_label:
             self.label = '-'.join(label_list)
-        self._clear_TR()
+        self._clear_calculations()
 
     def replace_layer(self, index, layer):
         '''
@@ -183,11 +187,44 @@ class MultiLayer:
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
-    def _clear_TR(self):
+    def calculate_color(self):
+        '''
+        Generate a color tuple of (r, g, b) normalized to 255 for transmittance
+        and reflectance.
+        '''
+        if not self._TR_calculated:
+            self.calculate_TR()
+            
+        os.chdir("plot support files")
+        rgbdata = np.loadtxt("rgbdata.txt", skiprows=1)
+        os.chdir("..")
+        
+        rgbwl = rgbdata[:,0]
+        struct_wl = self.wl * 1e3 if self.unit == 'micron' else self.wl
+        if struct_wl[0] > rgbwl[0] or struct_wl[-1] < rgbwl[-1]:
+            raise Exception("The entire visible spectrum must be available in the structure simulation.")
+        
+        rgb_sens = rgbdata[:,1:]
+        rgb_sens /= np.sum(rgb_sens, 0) # Normalize sum to 1
+
+        T_interp = calc.interpolate(struct_wl, self.T, rgbwl)
+        R_interp = calc.interpolate(struct_wl, self.R, rgbwl)
+
+        T_rgb = np.sum(T_interp[:,np.newaxis] * rgb_sens, 0) * 255
+        R_rgb = np.sum(R_interp[:,np.newaxis] * rgb_sens, 0) * 255
+        
+        self.T_color = tuple(T_rgb.astype(int))
+        self.R_color = tuple(R_rgb.astype(int))
+                
+    def _clear_calculations(self):
         self.T = None
         self.R = None
         self.A = None
+        self.T_color = None
+        self.R_color = None
         self._TR_calculated = False
+        self._color_calculated = False
+
 
 
 class DataFormatException(Exception):
