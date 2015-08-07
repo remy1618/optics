@@ -26,6 +26,17 @@ class Al(st.Layer):
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
 
+class AlN(st.Layer):
+    '''
+    Creates a Layer of aluminum nitride. Minimum user input is the thickness.
+    '''
+    def __init__(self, thickness, unit='nm'):
+        wl = _AlN_wl / 1e3 if unit == 'micron' else _AlN_wl
+        n = _AlN_nk
+        label = 'AlN'
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+
+
 class BK7(st.Layer):
     '''
     Creates a Layer of BK7 glass. Minimum user input is the thickness.
@@ -197,6 +208,10 @@ _Al_ndata = np.loadtxt("Al_n_Rakic1998.txt", skiprows=1)
 _Al_kdata = np.loadtxt("Al_k_Rakic1998.txt", skiprows=1)
 _Al_wl = _Al_ndata[:,0] * 1000
 _Al_nk = _Al_ndata[:,1] - 1j * _Al_kdata[:,1]
+
+_AlN_nkdata = np.loadtxt("AlN_nk.txt", skiprows=1)
+_AlN_wl = _AlN_nkdata[:,0]
+_AlN_nk = _AlN_nkdata[:,1] - 1j * _AlN_nkdata[:,2]
 
 _BK7_ndata = np.loadtxt("BK7_n.txt", skiprows=1)
 _BK7_kdata = np.loadtxt("BK7_k.txt", skiprows=1)
