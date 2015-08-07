@@ -61,18 +61,21 @@ class MultiLayer:
             if not isinstance(v, (int, float)):
                 raise DataFormatException(
                     "wl bounds should be given as a number. {} given".format(
-                        type(v)))
+                    type(v)))
         
         self._layers_list = []
         self.unit = unit
         self.label = '' if not label else label
         self._user_label = False if not label else True
-        self.wl_step = wl_step
-        self.wl = None
+        self._min_wl = min_wl
+        self._max_wl = max_wl
+        self._wl_step = wl_step
+        self.wl = np.arange(self._min_wl, self._max_wl, self._wl_step)
         self.wl_by_layer = ''
         self.n0 = n0
         self.ns = ns
-        self.T = None   # Do getter control with _TR_calculated
+        
+        self.T = None
         self.R = None
         self.A = None
         self.T_color = None
@@ -97,18 +100,16 @@ class MultiLayer:
                    layer.wl / 1e3 if self.unit == 'micron' and \
                                      layer.unit == 'nm' else \
                    layer.wl
-        if not self._layers_list:
-            self.wl = layer_wl
-        new_min_wl = max(self.wl[0], layer_wl[0])
-        new_max_wl = min(self.wl[-1], layer_wl[-1])
-        self.wl = np.arange(new_min_wl, new_max_wl, self.wl_step)
+        self._min_wl = max(self._min_wl, layer_wl[0])
+        self._max_wl = min(self._max_wl, layer_wl[-1])
+        self.wl = np.arange(self._min_wl, self._max_wl, self._wl_step)
                     
         index = len(self._layers_list) if not index else index
         self._layers_list.insert(index, layer)
 
         if not self._user_label:
             label_list = self.label.split('-') if self.label else []
-            label_list.insert(index, layer.label + str(layer.d))
+            label_list.insert(index, layer.label + str(int(layer.d)))
             self.label = '-'.join(label_list)
         self._clear_calculations()
     
