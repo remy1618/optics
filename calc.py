@@ -63,3 +63,12 @@ def _TR(k0, n, d, n0, ns):
     for i in range(num_of_layers):
         M = np.einsum('ijk,ikl->ijl',
                       M, _transfer_matrix(k0, n[i], d[i]))
+    # Denominator definition (to avoid multi-line equations)
+    D = (Y0 * M[:,0,0] + Y0 * Ys * M[:,0,1] + M[:,1,0] + Ys * M[:,1,1])
+    # Numerator for reflectance
+    Nu = (Y0 * M[:,0,0] + Y0 * Ys * M[:,0,1] - M[:,1,0] - Ys * M[:,1,1])
+    t = 2 * Y0 / D
+    r = Nu / D
+    T = (np.absolute(t))**2 * Ys / Y0
+    R = (np.absolute(r))**2
+    return T, R
