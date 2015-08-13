@@ -10,18 +10,11 @@ def interpolate(wl_raw, f_raw, wl):
     f is a function of wl_raw.
     wl is the new domain that f is mapped onto via interpolation.
     All inputs are 1darrays.
-    '''        
-    f = np.empty(len(wl), f_raw.dtype)
-    for i in range(len(wl)):
-        j = 0
-        while wl[i] > wl_raw[j]:
-            j += 1
-        # Now wl_raw[j - 1] < wl[i] <= wl_raw[j]
-        # Linear interpolation y = y0 + (y1-y0)/(x1-x0) * (x-x0)
-        f[i] = f_raw[j-1] + \
-                   (f_raw[j] - f_raw[j-1]) / (wl_raw[j] - wl_raw[j-1]) * \
-                   (wl[i] - wl_raw[j-1])
-    return f
+    '''
+    if f_raw.dtype == complex:
+        return np.interp(wl, wl_raw, f_raw.real) + \
+               1j * np.interp(wl, wl_raw, f_raw.imag)
+    return np.interp(wl, wl_raw, f_raw)
 
 def transmittance(k0, n, d, n0=1.0, ns=1.5):
     return _TR(k0, n, d, n0, ns)[0]
@@ -30,33 +23,43 @@ def reflectance(k0, n, d, n0=1.0, ns=1.5):
     return _TR(k0, n, d, n0, ns)[1]
 
 def _transfer_matrix(k0, n, d):
-    assert isinstance(n, (complex, float, int)), "n is not a number but type " + str(type(n))
-    assert isinstance(d, (complex, float, int)), "d is not a number but type " + str(type(d))
+    '''
+    Outputs a 3d array of shape (N, 2, 2) where N is the number of wavevectors
+    and each of the 2-by-2 sub-array associated with the particular wavevector.
+    '''
     Y = n * sqrt(eps0 / mu0)
-    return np.array([
-                     [cos(k0 * n * d), 1j * sin(k0 * n * d) / Y],
-                     [1j * Y * sin(k0 * n * d), cos(k0 * n * d)]
-                    ])
+    # Invidual matrix element definition
+    M00 = cos(k0 * n * d)
+    M01 = 1j * sin(k0 * n * d) / Y
+    M10 = 1j * sin(k0 * n * d) * Y
+    M11 = M00
+    for a in [n, M00, M01, M10, M11]:
+        assert k0.shape == a.shape,\
+        "k0.shape " + str(k0.shape) + ", mismatch.shape " + str(a.shape)
+    M = np.empty((k0.shape[0], 2, 2), dtype=complex)
+    M[:,0,0] = M00
+    M[:,0,1] = M01
+    M[:,1,0] = M10
+    M[:,1,1] = M11
+    return M
 
 def _TR(k0, n, d, n0, ns):
     '''
-    Calculates transmittance and reflectance at a single wavelength.
-    n is an array of refractive index for each layer from top to bottom.
-    d is an array of thickness for each layer from top to bottom.
+    k0 1d array of length #_of_wavelengths
+    n 2d array of length (#_of_layers, #_of_wavelengths)
+    d 1d array of length (#_of_layers)
     '''
-    assert isinstance(n, (np.ndarray, list, tuple)), "n is not an array but type " + str(type(n))
-    assert isinstance(d, (np.ndarray, list, tuple)), "d is not an array but type " + str(type(d))
-    assert len(n) == len(d), "number of layers mismatch between n and d: " + "n = " + str(len(n)) + ", d = " + str(len(d))
-    assert isinstance(n[0], (complex, float, int)), "values in n array not numbers but type " + str(type(n))
-    assert isinstance(d[0], (complex, float, int)), "values in d array not numbers but type " + str(type(d))
+    num_of_wavelengths = k0.shape[0]
+    num_of_layers = d.shape[0]
+    
     Y0, Ys = n0 * sqrt(eps0 / mu0), ns * sqrt(eps0 / mu0)
     Y = n * sqrt(eps0 / mu0)
-    m = 1
-    for i in range(len(n)):
-        m = np.dot(m, _transfer_matrix(k0, n[i], d[i]))
-    t = 2 * Y0 / (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
-    T = (np.absolute(t))**2 * Ys / Y0
-    r = (Y0 * m[0,0] + Y0 * Ys * m[0,1] - m[1,0] - Ys * m[1,1]) / \
-        (Y0 * m[0,0] + Y0 * Ys * m[0,1] + m[1,0] + Ys * m[1,1])
-    R = (np.absolute(r))**2
-    return T, R
+
+    M = np.zeros((num_of_wavelengths, 2, 2), complex)
+    M[:,0,0], M[:,1,1] = 1, 1 # num_of_wavelengths-array of identity matrix
+    t = np.empty(num_of_wavelengths, complex)
+    r = np.empty(num_of_wavelengths, complex)
+    # Maybe possible to speed up here by taking out loop
+    for i in range(num_of_layers):
+        M = np.einsum('ijk,ikl->ijl',
+                      M, _transfer_matrix(k0, n[i], d[i]))

@@ -153,38 +153,29 @@ class MultiLayer:
         return structure_view
 
     def calculate_TR(self):
-        '''
-        Calculate the reflectance and transmittance of the structure with the
-        transfer matrix method from calc.py.
-        '''
         if not self._layers_list:
             raise EmptyStructureException("Structure is empty.")
-
-        # Room for np.ndarray optimization in the following code
         
-        n_list = []    # Avoid side effect on Layer.n in the MultiLayer
-        # interpolate seems costly. Unsure if obvious optimization exists.
-        for L in self._layers_list:
+        num_layers = len(self._layers_list)
+        num_wl = len(self.wl)
+
+        # n a 2d array of layers (row) and wavelength (column)
+        n = np.empty([num_layers, num_wl], complex)
+        for i, L in enumerate(self._layers_list):
             L_wl = L.wl * 1e3 if self.unit == 'nm' and L.unit == 'micron' else\
                    L.wl / 1e3 if self.unit == 'micron' and L.unit == 'nm' else\
                    L.wl
             layer_n = calc.interpolate(L_wl, L.n, self.wl)
-            n_list.append(layer_n)
-            
+            n[num_layers - 1 - i] = layer_n
+
         wl = self.wl / 1e9 if self.unit == 'nm' else self.wl / 1e6
         k0 = 2 * np.pi / wl
-        temp_n = [layer.n for layer in self._layers_list[::-1]]
-        n = zip(*n_list[::-1])
-        d = [layer.d / 1e9 if self.unit == 'nm' else layer.d / 1e6 \
-             for layer in self._layers_list[::-1]]
-        wl_len = len(self.wl)
-        self.T = np.empty(wl_len)
-        self.R = np.empty(wl_len)
-        for i in range(wl_len):
-            self.T[i] = calc.transmittance(k0[i], n[i], d,
-                                           n0=self.n0, ns=self.ns)
-            self.R[i] = calc.reflectance(k0[i], n[i], d,
-                                         n0=self.n0, ns=self.ns)
+
+        d = np.array([layer.d / 1e9 if self.unit == 'nm' else layer.d / 1e6 \
+                      for layer in self._layers_list[::-1]])
+
+        self.T = calc.transmittance(k0, n, d, n0=self.n0, ns=self.ns)
+        self.R = calc.reflectance(k0, n, d, n0=self.n0, ns=self.ns)
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
