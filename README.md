@@ -11,7 +11,8 @@ import opt_sim as opt
 print opt.nklib.material_list
 ```
 
-    ['Ag', 'Al', 'AlN', 'BK7', 'DLC3W', 'DLC5W', 'DLC10W', 'DLC15W', 'DLC20W', 'DLC40W', 'DLC60W', 'DLC80WA', 'ITO', 'PDMS', 'ZnO']
+    ['Ag', 'Al', 'AlN', 'BK7', 'DLC3W', 'DLC5W', 'DLC10W', 'DLC15W', 'DLC20W', 'DLC40W', 'DLC60W',
+    'DLC80WA', 'ITO', 'PDMS', 'ZnO']
     
 
 Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers and. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
@@ -55,11 +56,11 @@ We can now plot the two structurues' transmittance and reflectance curve.
 
 ```python
 %matplotlib inline
-opt.plot.TR([AgStruct, AgAlNStruct])  # Putting structures in a list will plot them in the same window.
+opt.plot.TR([AgStruct, AgAlNStruct])  # Put structures in a list to plot them in the same window.
 ```
 
 
-![png](output_8_0.png)
+![png](README images/output_8_0.png)
 
 
 Some options are given in TR, for example:
@@ -70,7 +71,7 @@ opt.plot.TR([AgAlNStruct], curves="T", legend=False, min_wl=300, max_wl=1500, sh
 ```
 
 
-![png](output_10_0.png)
+![png](README images/output_10_0.png)
 
 
 where the background curve is the AM1.5 solar spectrum.
@@ -82,7 +83,8 @@ Should we want to manually make our figure using matplotlib.pyplot, the far fiel
 import matplotlib.pyplot as plt  # Also accessible from opt.plot.plt
 
 DLC_coat = ML([DLC60W(100)])
-DLC_coat.calculate_TR()  # DLC_coat now has initialized attributes .T, .R, and .A representing the far fields.
+DLC_coat.calculate_TR()
+# DLC_coat now has initialized attributes .T, .R, and .A representing the far fields.
 
 plt.figure()
 plt.title("Optical spectrums of 100 nm of high-refractive-index Diamond-Like Carbon")
@@ -105,7 +107,7 @@ plt.text(520, 0.92, "Visible")
 
 
 
-![png](output_12_1.png)
+![png](README images/output_12_1.png)
 
 
 This thin film has a nonuniform transmittance across the visible, making it coloured. opt_sim provides RGB calculation of the coating in (255, 255, 255) format.
@@ -127,11 +129,11 @@ opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
 ```
 
 
-![png](output_16_0.png)
+![png](README images/output_16_0.png)
 
 
 
-![png](output_16_1.png)
+![png](README images/output_16_1.png)
 
 
 For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers of different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
@@ -145,7 +147,7 @@ opt.plot.show()
 ```
 
 
-![png](output_18_0.png)
+![png](README images/output_18_0.png)
 
 
 Now we create MultiLayers with alternating DLC's, one where the refractive index is low and one where the refractive index is high. Depending on the number of layers, the spectrum can look drastically different.
@@ -163,7 +165,7 @@ opt.plot.show()
 ```
 
 
-![png](output_20_0.png)
+![png](README images/output_20_0.png)
 
 
 
