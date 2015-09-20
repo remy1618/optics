@@ -1,117 +1,176 @@
-# opt_sim
-Transfer matrix simulation of 1D optical multilayers.
 
-### Dependecies
+# opt_sim quick start
 
-- [NumPy](http://www.numpy.org/)
-- [matplotlib](http://matplotlib.org/)
+opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library.
 
-### Structure
+The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
 
-```
-.
-├── opt_sim\
-│	  ├── __init__.py
-│	  ├── calc.py
-│	  ├── nklib.py
-│	  ├── plot.py
-│	  ├── structure.py
-│	  └── nklib_data\
-│		  ├── nk data text files
-│		  └── DLC data extrapolation figures
-└── example_code.py
-```
 
-### Usage
-
-To use the library, the Python file that imports it should reside in the directory that contains the package `opt_sim`.
-
-Example code and brief documentation for usage of the library:
-
-```
-# opt_sim is a package that includes several modules. The call signatures in
-# the code below shows the organization.
+```python
 import opt_sim as opt
+print opt.nklib.material_list
+```
 
-# Currently the materials available are
-# Ag, Al, BK7, DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W, ITO, ZnO
+    ['Ag', 'Al', 'AlN', 'BK7', 'DLC3W', 'DLC5W', 'DLC10W', 'DLC15W', 'DLC20W', 'DLC40W', 'DLC60W', 'DLC80WA', 'ITO', 'PDMS', 'ZnO']
+    
 
-# Input thickness for each layer. Default unit is nm
-Ag7 = opt.nklib.Ag(7)
-DLC50 = opt.nklib.DLC5W(50)
-# An example of using micron as unit
-BK = opt.nklib.BK7(5000, unit='micron')
+Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers and. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
 
-# Create a structure by making a list of Layers. Order is from bottom to top.
-AgSCC = opt.structure.MultiLayer([DLC50, Ag7, DLC50])
-plain_glass = opt.structure.MultiLayer([BK], label="plain glass")
 
-# A structure with an explicit substrate can be made, noting to change
-# the refractive index of the exiting mdeium ns to 1.0 from its default
-# value of 1.5
-AgSCC_glass = opt.structure.MultiLayer([BK, DLC50, Ag7, DLC50],
-                                        ns=1.0, label="on glass")
+```python
+from opt_sim.structure import MultiLayer as ML
+from opt_sim.nklib import *
+Ag12 = Ag(12)  # Thickness is the only required input. Default unit is nanometer.
+AlN45 = AlN(45)
+AgStruct = ML([Ag12])  # Default environment-substrate configuration is air-glass.
+AgAlNStruct = ML([Ag12, AlN45])  # The list of Layers is ordered from substrate to environment.
+```
 
-# A graphical representation of the MultiLayer can be shown on the console
-print AgSCC_glass
+To make the structure configuration clear, a schematic of the structure can be printed in the console.
 
-# TR plotting can take either a single MultiLayer or a list of MultiLayers
-# as its argument. By default both TR are shown. With the curves keyword
-# argument, a combination of T, R, and A can be plotted.
-opt.plot.TR([AgSCC, AgSCC_glass])
-opt.plot.TR(plain_glass, curves='TA')
 
-# nk plotting is similar to TR plotting, switching out MultiLayers for Layers
-# as its argument. Custom minimum and maximum wavelength value can be given
-# for both plotting functions.
-opt.plot.nk([DLC50, BK], curves='k', min_wl=500)
+```python
+print AgStruct
+print AgAlNStruct
+```
 
+    
+    Top
+    --------
+    Ag 12 nm
+    --------
+    
+    
+    Top
+    ---------
+    AlN 45 nm
+    ---------
+    Ag 12 nm
+    ---------
+    
+    
+
+We can now plot the two structurues' transmittance and reflectance curve.
+
+
+```python
+%matplotlib inline
+opt.plot.TR([AgStruct, AgAlNStruct])  # Putting structures in a list will plot them in the same window.
+```
+
+
+![png](output_8_0.png)
+
+
+Some options are given in TR, for example:
+
+
+```python
+opt.plot.TR([AgAlNStruct], curves="T", legend=False, min_wl=300, max_wl=1500, show_solar=True)
+```
+
+
+![png](output_10_0.png)
+
+
+where the background curve is the AM1.5 solar spectrum.
+
+Should we want to manually make our figure using matplotlib.pyplot, the far fields have to be calculated with a call explicitly from the MultiLayer class. In opt.plot.TR this was automatically performed.
+
+
+```python
+import matplotlib.pyplot as plt  # Also accessible from opt.plot.plt
+
+DLC_coat = ML([DLC60W(100)])
+DLC_coat.calculate_TR()  # DLC_coat now has initialized attributes .T, .R, and .A representing the far fields.
+
+plt.figure()
+plt.title("Optical spectrums of 100 nm of high-refractive-index Diamond-Like Carbon")
+plt.plot(DLC_coat.wl, DLC_coat.A, label="Absorption")
+plt.plot(DLC_coat.wl, DLC_coat.T, label="Transmission")
+plt.xlim(200, 1000)
+plt.xlabel("Wavelength (nm)")
+plt.legend(loc=0)
+plt.grid("on")
+plt.plot([400, 400], [0, 1], "k--")
+plt.plot([700, 700], [0, 1], "k--")
+plt.text(520, 0.92, "Visible")
+```
+
+
+
+
+    <matplotlib.text.Text at 0x56d0e10>
+
+
+
+
+![png](output_12_1.png)
+
+
+This thin film has a nonuniform transmittance across the visible, making it coloured. opt_sim provides RGB calculation of the coating in (255, 255, 255) format.
+
+
+```python
+DLC_coat.calculate_color()
+print DLC_coat.T_color
+```
+
+    (171, 167, 135)
+    
+
+Lastly, the refractive index of individual materials can be produced. Shown below is the real and imaginary component of the refractive index of silver.
+
+
+```python
+opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
+```
+
+
+![png](output_16_0.png)
+
+
+
+![png](output_16_1.png)
+
+
+For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers of different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
+
+First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon is one of them. We can change its refractive index depending on the fabrication parameters.
+
+
+```python
+opt.plot.nk([DLC(1) for DLC in opt.nklib.DLC_list], curves="n")
 opt.plot.show()
+```
 
 
-# Example using least verbose call signatures by using import *
-from opt_sim.structure import MultiLayer as ML
-from opt_sim import *
-
-Ag7 = Ag(7)
-ITO30 = ITO(30)
-ITO60 = ITO(60)
-struct_AgITO = ML([ITO30, Ag7, ITO60, Ag7, ITO30])
-print struct_AgITO
-
-# If one material is more restricted in its data wavelength range, it can
-# be explicitly examined with the wl_by_layer attribute of a MultiLayer
-print struct_AgITO.wl_by_layer
-
-TR(struct_AgITO)
-show()
+![png](output_18_0.png)
 
 
-# Recommended call signatures
-from opt_sim.structure import MultiLayer as ML
-from opt_sim import nklib, plot
+Now we create MultiLayers with alternating DLC's, one where the refractive index is low and one where the refractive index is high. Depending on the number of layers, the spectrum can look drastically different.
 
-# Example making a DLC layer with a refractive index gradient. In opt_sim.nklib
-# exists DLC_list that contains all 7 material types of DLC, ordering from
-# DLC3W to DLC60W. The extended keyword argument refers to the extrapolation
-# performed on the experimental DLC data to extend it from the visible range
-# to the near infrared range. The option to not extrapolate the data is given.
-# See \opt_sim\nklib_data for figures related to the extrapolation.
-DLC_gradient = [DLC(20, extended=False) for DLC in nklib.DLC_list[::-1]]
-struct_DLC = ML(DLC_gradient, label="DLC gradient 140nm")
 
-# n and k can be plotted in separate windows if wished.
-plot.nk(DLC_gradient, sep=True)
-plot.TR(struct_DLC)
-plot.show()
+```python
+DLC_L = DLC3W(200)
+DLC_H = DLC60W(200)
+PC3 = ML([DLC_L, DLC_H] * 3 + [DLC_L], label="3-layered PC")
+PC21 = ML([DLC_L, DLC_H] * 10 + [DLC_L], label="21-layered PC")
+PC101 = ML([DLC_L, DLC_H] * 50 + [DLC_L], label="101-layered PC")
+opt.plot.TR([PC3, PC21, PC101], curves="T")
+opt.plot.TR([PC3, PC21, PC101], curves="R")
+opt.plot.show()
+```
 
-# Alternatively, the user can use matplotlib.pyplot (already imported as plt)
-# to perform any plotting they wish. However, an explicit call to calculate
-# T and R of the MultiLayer has to be called first.
-struct = ML([Ag7, DLC50, Ag7])
-struct.calculate_TR()
-print struct.wl[::30]
-print struct.T[::30]
-print struct.R[::30]
-# Code for plotting goes here...
+
+![png](output_20_0.png)
+
+
+
+![png](output_20_1.png)
+
+
+
+```python
+
 ```
