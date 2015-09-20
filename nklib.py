@@ -152,9 +152,9 @@ class DLC60W(st.Layer):
     extrapolated. See associated image files in the nklib folder.
     '''
     def __init__(self, thickness, unit='nm', extended=True):
-        wl = _DLC40W_ext_wl if extended else _DLC40W_wl
+        wl = _DLC60W_ext_wl if extended else _DLC60W_wl
         wl = wl / 1e3 if unit == 'micron' else wl
-        n = _DLC40W_ext_nk if extended else _DLC40W_nk
+        n = _DLC60W_ext_nk if extended else _DLC60W_nk
         label = 'DLC60W'
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
 
