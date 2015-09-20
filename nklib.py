@@ -4,6 +4,12 @@ import calc
 import structure as st
 
 
+material_list = [
+    "Ag", "Al", "AlN", "BK7", "DLC3W", "DLC5W", "DLC10W", "DLC15W", "DLC20W",
+    "DLC40W", "DLC60W", "DLC80WA", "ITO", "PDMS", "ZnO"
+    ]
+
+
 class Ag(st.Layer):
     '''
     Creates a Layer of silver. Minimum user input is the thickness.
