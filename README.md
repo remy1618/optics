@@ -11,8 +11,8 @@ import opt_sim as opt
 print opt.nklib.material_list
 ```
 
-    ['Ag', 'Al', 'AlN', 'BK7', 'DLC3W', 'DLC5W', 'DLC10W', 'DLC15W', 'DLC20W', 'DLC40W', 'DLC60W',
-    'DLC80WA', 'ITO', 'PDMS', 'ZnO']
+    ['Ag', 'Al', 'AlN', 'BK7', 'DLC3W', 'DLC5W', 'DLC10W', 'DLC15W', 'DLC20W', 'DLC40W',
+    'DLC60W', 'DLC80WA', 'ITO', 'PDMS', 'ZnO']
     
 
 Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers and. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
@@ -24,7 +24,7 @@ from opt_sim.nklib import *
 Ag12 = Ag(12)  # Thickness is the only required input. Default unit is nanometer.
 AlN45 = AlN(45)
 AgStruct = ML([Ag12])  # Default environment-substrate configuration is air-glass.
-AgAlNStruct = ML([Ag12, AlN45])  # The list of Layers is ordered from substrate to environment.
+AgAlNStruct = ML([Ag12, AlN45])  # Ordered from substrate to environment.
 ```
 
 To make the structure configuration clear, a schematic of the structure can be printed in the console.
@@ -56,7 +56,8 @@ We can now plot the two structurues' transmittance and reflectance curve.
 
 ```python
 %matplotlib inline
-opt.plot.TR([AgStruct, AgAlNStruct])  # Put structures in a list to plot them in the same window.
+# Put structures in a list to plot them in the same window.
+opt.plot.TR([AgStruct, AgAlNStruct])
 ```
 
 
@@ -67,7 +68,8 @@ Some options are given in TR, for example:
 
 
 ```python
-opt.plot.TR([AgAlNStruct], curves="T", legend=False, min_wl=300, max_wl=1500, show_solar=True)
+opt.plot.TR([AgAlNStruct], curves="T", show_solar=True, legend=False,
+            min_wl=300, max_wl=1500)
 ```
 
 
@@ -169,7 +171,7 @@ opt.plot.show()
 
 
 
-![png](output_20_1.png)
+![png](README images/output_20_1.png)
 
 
 
