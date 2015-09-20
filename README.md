@@ -20,7 +20,7 @@ print opt.nklib.material_list
     'DLC60W', 'DLC80WA', 'ITO', 'PDMS', 'ZnO']
     
 
-Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers and. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
+Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
 
 
 ```python
