@@ -143,7 +143,7 @@ opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
 ![png](README images/output_16_1.png)
 
 
-For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers of different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
+For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers with different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
 
 First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon is one of them. We can change its refractive index depending on the fabrication parameters.
 
