@@ -1,6 +1,11 @@
 
 # opt_sim quick start
 
+### Dependecies
+
+- [NumPy](http://www.numpy.org/) (Version 1.6.0 or newer)
+- [matplotlib](http://matplotlib.org/)
+
 opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library.
 
 The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
