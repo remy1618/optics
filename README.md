@@ -6,6 +6,8 @@
 - [NumPy](http://www.numpy.org/) (Version 1.6.0 or newer)
 - [matplotlib](http://matplotlib.org/)
 
+**Important**: Currently, the cloned library has to be placed in the same directory as the script that calls it.
+
 opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library.
 
 The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
@@ -20,7 +22,7 @@ print opt.nklib.material_list
     'DLC60W', 'DLC80WA', 'ITO', 'PDMS', 'ZnO']
     
 
-Each of the materials is a subclass of the Layer class. The MultiLayer class is the physical model of the multilayer thin film and is composed of a list of Layers. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
+Each of the materials is a subclass of the `Layer` class. The `MultiLayer` class is the physical model of the multilayer thin film and is composed of a list of `Layers`. Let's say we want to look at the transmittance of an ultrathin silver film with and without an aluminum nitride antireflection coating. First we initialize the structures.
 
 
 ```python
@@ -56,7 +58,7 @@ print AgAlNStruct
     
     
 
-We can now plot the two structurues' transmittance and reflectance curve.
+We can now plot the two structures' transmittance and reflectance curves using `opt.plot.TR`.
 
 
 ```python
@@ -69,7 +71,7 @@ opt.plot.TR([AgStruct, AgAlNStruct])
 ![png](README images/output_8_0.png)
 
 
-Some options are given in TR, for example:
+Some options are given in `opt.plot.TR`, for example:
 
 
 ```python
@@ -83,7 +85,7 @@ opt.plot.TR([AgAlNStruct], curves="T", show_solar=True, legend=False,
 
 where the background curve is the AM1.5 solar spectrum.
 
-Should we want to manually make our figure using matplotlib.pyplot, the far fields have to be calculated with a call explicitly from the MultiLayer class. In opt.plot.TR this was automatically performed.
+Should we want to manually make our figure using `matplotlib.pyplot`, the far fields have to be calculated with a call explicitly from the `MultiLayer` class first. In `opt.plot.TR` this was automatically performed.
 
 
 ```python
@@ -117,7 +119,7 @@ plt.text(520, 0.92, "Visible")
 ![png](README images/output_12_1.png)
 
 
-This thin film has a nonuniform transmittance across the visible, making it coloured. opt_sim provides RGB calculation of the coating in (255, 255, 255) format.
+This thin film has a nonuniform transmittance across the visible, making it coloured. `opt_sim` provides RGB calculation of the coating with the (255, 255, 255) normalization format.
 
 
 ```python
@@ -145,7 +147,7 @@ opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
 
 For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers with different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
 
-First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon is one of them. We can change its refractive index depending on the fabrication parameters.
+First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon (DLC) is one of them. We can change its refractive index depending on the fabrication parameters. Below is the variation in the real refractive index of DLC.
 
 
 ```python
@@ -157,7 +159,7 @@ opt.plot.show()
 ![png](README images/output_18_0.png)
 
 
-Now we create MultiLayers with alternating DLC's, one where the refractive index is low and one where the refractive index is high. Depending on the number of layers, the spectrum can look drastically different.
+Picking from the different DLC options possible, we create a multilayer with alternating DLC layerss, one where the refractive index is low (DLC3W) and one where the refractive index is high (DLC60W). Depending on the number of layers, the spectrum can look drastically different. As shown below, with an increasing number of layers, the spectrum looks sharper and sharper with increasing oscillations. This is the behaviour of a typical photonic crystal.
 
 
 ```python
