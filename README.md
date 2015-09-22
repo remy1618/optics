@@ -34,7 +34,7 @@ AgStruct = ML([Ag12])  # Default environment-substrate configuration is air-glas
 AgAlNStruct = ML([Ag12, AlN45])  # Ordered from substrate to environment.
 ```
 
-To make the structure configuration clear, a schematic of the structure can be printed in the console.
+To clarify on the structure configuration, a schematic of the structure can be printed in the console.
 
 
 ```python
@@ -87,7 +87,7 @@ opt.plot.TR([AgAlNStruct], curves="T", show_solar=True, legend=False,
 
 where the background curve is the AM1.5 solar spectrum.
 
-Should we want to manually make our figure using `matplotlib.pyplot`, the far fields have to be calculated with a call explicitly from the `MultiLayer` class first. In `opt.plot.TR` this was automatically performed.
+Should we want to manually make our figure using `matplotlib.pyplot`, the far fields have to be calculated with a call explicitly from the `MultiLayer` class first. In `opt.plot.TR`, this was automatically performed.
 
 
 ```python
@@ -149,7 +149,7 @@ opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
 
 For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers with different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
 
-First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon (DLC) is one of them. We can change its refractive index depending on the fabrication parameters. Below is the variation in the real refractive index of DLC.
+First, we want to select two materials with different refractive indices. And actually, we can make do with just one material if it has variability in its refractive index. Diamond-Like Carbon (DLC) is one of such materials. We can change its refractive index depending on the fabrication parameters. Below is the variation in the real refractive index of DLC.
 
 
 ```python
@@ -161,7 +161,7 @@ opt.plot.show()
 ![png](README images/output_18_0.png)
 
 
-Picking from the different DLC options possible, we create a multilayer with alternating DLC layerss, one where the refractive index is low (DLC3W) and one where the refractive index is high (DLC60W). Depending on the number of layers, the spectrum can look drastically different. As shown below, with an increasing number of layers, the spectrum looks sharper and sharper with increasing oscillations. This is the behaviour of a typical photonic crystal.
+Picking from the different DLC options possible, we create a multilayer with alternating DLC layers, one where the refractive index is low (DLC3W) and one where the refractive index is high (DLC60W). Depending on the number of layers, the spectrum can look drastically different. As shown below, with an increasing number of layers, the spectrum looks sharper and sharper with increasing oscillations. This is the behaviour of a typical photonic crystal.
 
 
 ```python
