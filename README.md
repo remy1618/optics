@@ -6,7 +6,7 @@
 - [NumPy](http://www.numpy.org/) (Version 1.6.0 or newer)
 - [matplotlib](http://matplotlib.org/)
 
-**Important**: Currently, the cloned library has to be placed in the same directory as the script that calls it.
+**Important:** Currently, the cloned library has to be placed in the same directory as the script that calls it.
 
 opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library as well as application of the library to Solar Control Coatings and photonic crystals.
 
