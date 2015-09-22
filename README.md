@@ -8,7 +8,7 @@
 
 **Important**: Currently, the cloned library has to be placed in the same directory as the script that calls it.
 
-opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library.
+opt_sim is a library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library as well as application of the library to Solar Control Coatings and photonic crystals.
 
 The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
 
