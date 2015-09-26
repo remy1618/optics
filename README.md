@@ -8,7 +8,9 @@
 
 **Important:** Currently, the cloned library has to be placed in the same directory as the script that calls it.
 
-opt_sim is an object-oriented user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Below are examples of typical usages of the library as well as application of the library to Solar Control Coatings and photonic crystals.
+`opt_sim` is an object-oriented and user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Through this, you can quickly find how the optical properties of your subtrate changes when a multilayered coating is applied on top. The object-oriented design is intentionally chosen to ease the usage and extension of the library. Rather than being a complicated calculator, `opt_sim` provides a design and optimization platform. Shown below are examples of the typical usages of the library as well as its application to Solar Control Coatings and photonic crystals.
+
+-----------------------------------------------------------------
 
 The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
 
@@ -111,13 +113,6 @@ plt.text(520, 0.92, "Visible")
 ```
 
 
-
-
-    <matplotlib.text.Text at 0x56d0e10>
-
-
-
-
 ![png](README images/output_12_1.png)
 
 
@@ -154,7 +149,6 @@ First, we want to select two materials with different refractive indices. And ac
 
 ```python
 opt.plot.nk([DLC(1) for DLC in opt.nklib.DLC_list], curves="n")
-opt.plot.show()
 ```
 
 
@@ -172,7 +166,6 @@ PC21 = ML([DLC_L, DLC_H] * 10 + [DLC_L], label="21-layered PC")
 PC101 = ML([DLC_L, DLC_H] * 50 + [DLC_L], label="101-layered PC")
 opt.plot.TR([PC3, PC21, PC101], curves="T")
 opt.plot.TR([PC3, PC21, PC101], curves="R")
-opt.plot.show()
 ```
 
 
@@ -181,9 +174,3 @@ opt.plot.show()
 
 
 ![png](README images/output_20_1.png)
-
-
-
-```python
-
-```
