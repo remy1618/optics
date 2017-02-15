@@ -2,9 +2,9 @@
 # opt_sim quick start
 
 ### Dependecies
-
-- [NumPy](http://www.numpy.org/) (Version 1.6.0 or newer)
-- [matplotlib](http://matplotlib.org/)
+- Python 2.7
+- [NumPy](http://www.numpy.org/) Version 1.6.0 or newer
+- [matplotlib](http://matplotlib.org/) Version 1.1.0 or newer
 
 **Important:** Currently, the cloned library has to be placed in the same directory as the script that calls it.
 
