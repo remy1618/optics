@@ -70,7 +70,7 @@ opt.plot.TR([AgStruct, AgAlNStruct])
 ```
 
 
-![Alt text](README images/output_8_0.png)
+![Alt text]("README images/output_8_0.png")
 
 
 Evidently, the structure with an antireflection coating transmits significantly more visible light between 400 nm and 700 nm. Furthermore, the reflective property of silver is shifted toward the infrared beyond 700 nm. This is a simple example of a Solar Control Coating (SCC). SCCs are transparent coatings that reduces temperature indoors passively when applied on windows in the summer (out of its multiple uses). Around half of the sun's energy is in the infrared that, when transmitted, contributes to heat. SCCs reflect off the infrared radiation to keep the interior cool.
