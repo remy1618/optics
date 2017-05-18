@@ -69,8 +69,7 @@ We can now plot the two structures' transmittance and reflectance curves using `
 opt.plot.TR([AgStruct, AgAlNStruct])
 ```
 
-
-![alt text]("README images/output_8_0.png")
+![output_8_0](https://cloud.githubusercontent.com/assets/10491703/26182577/1230f264-3b47-11e7-8995-b19fa15eddd8.png)
 
 
 Evidently, the structure with an antireflection coating transmits significantly more visible light between 400 nm and 700 nm. Furthermore, the reflective property of silver is shifted toward the infrared beyond 700 nm. This is a simple example of a Solar Control Coating (SCC). SCCs are transparent coatings that reduces temperature indoors passively when applied on windows in the summer (out of its multiple uses). Around half of the sun's energy is in the infrared that, when transmitted, contributes to heat. SCCs reflect off the infrared radiation to keep the interior cool.
@@ -84,7 +83,7 @@ opt.plot.TR([AgAlNStruct], curves="T", show_solar=True, legend=False,
 ```
 
 
-![png](README images/output_10_0.png)
+![output_10_0](https://cloud.githubusercontent.com/assets/10491703/26182654/965e60ee-3b47-11e7-95de-beccceef1b6f.png)
 
 
 where the background curve is the AM1.5 solar spectrum.
@@ -113,7 +112,7 @@ plt.text(520, 0.92, "Visible")
 ```
 
 
-![png](README images/output_12_1.png)
+![output_12_1](https://cloud.githubusercontent.com/assets/10491703/26182662/a132949a-3b47-11e7-9f65-b6eb24884bb2.png)
 
 
 This thin film has a nonuniform transmittance across the visible, making it coloured. `opt_sim` provides RGB calculation of the coating with the (255, 255, 255) normalization format.
@@ -135,11 +134,11 @@ opt.plot.nk([Ag12], sep=True)  # Shows n and k in separate windows.
 ```
 
 
-![png](README images/output_16_0.png)
+![output_16_0](https://cloud.githubusercontent.com/assets/10491703/26182664/a8b04442-3b47-11e7-9422-cf2b02d85598.png)
 
 
 
-![png](README images/output_16_1.png)
+![output_16_1](https://cloud.githubusercontent.com/assets/10491703/26182668/b284765a-3b47-11e7-8d5b-81fe9d85776c.png)
 
 
 For fun, let's look at the optical spectrum of photonic crystals. A photonic crystal is composed of a stack of alternating layers with different refractive indices. This type of structure will create passbands and stopbands in the spectrum. Depending on the number of layers, the bands will look either broad or sharp. An ideal photonic crystal will have a spectrum that looks like a step function.
@@ -152,7 +151,7 @@ opt.plot.nk([DLC(1) for DLC in opt.nklib.DLC_list], curves="n")
 ```
 
 
-![png](README images/output_18_0.png)
+![output_18_0](https://cloud.githubusercontent.com/assets/10491703/26182678/b9f4e03c-3b47-11e7-9f60-e06e1f6dc5ba.png)
 
 
 Picking from the different DLC options possible, we create a multilayer with alternating DLC layers, one where the refractive index is low (DLC3W) and one where the refractive index is high (DLC60W). Depending on the number of layers, the spectrum can look drastically different. As shown below, with an increasing number of layers, the spectrum looks sharper and sharper with increasing oscillations. This is the behaviour of a typical photonic crystal.
@@ -169,8 +168,8 @@ opt.plot.TR([PC3, PC21, PC101], curves="R")
 ```
 
 
-![png](README images/output_20_0.png)
+![output_20_0](https://cloud.githubusercontent.com/assets/10491703/26182687/c441ec24-3b47-11e7-9477-0917bad8aef8.png)
 
 
 
-![png](README images/output_20_1.png)
+![output_20_1](https://cloud.githubusercontent.com/assets/10491703/26182694/cb157c28-3b47-11e7-8fef-a54e67d324aa.png)
