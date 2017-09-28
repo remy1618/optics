@@ -1,6 +1,11 @@
 
 # opt_sim quick start
 
+### Installation
+```
+>>> pip install opt_sim
+```
+
 ### Dependecies
 - Python 2.7
 - [NumPy](http://www.numpy.org/) Version 1.7.0 or newer
