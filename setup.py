@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='opt_sim',
-      version='1.0',
+      version='1.1',
       description='Transfer matrix simulation of 1D optical multilayers',
       url='http://github.com/remy1618/opt_sim',
       author='Remy Ko',
