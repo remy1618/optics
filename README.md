@@ -1,9 +1,9 @@
 
-# opt_sim quick start
+# optics quick start
 
 ### Installation
 ```
->>> pip install opt_sim
+>>> pip install optics
 ```
 
 ### Dependecies
@@ -11,9 +11,7 @@
 - [NumPy](http://www.numpy.org/) Version 1.7.0 or newer
 - [matplotlib](http://matplotlib.org/) Version 1.1.0 or newer
 
-**Important:** Currently, the cloned library has to be placed in the same directory as the script that calls it.
-
-`opt_sim` is an object-oriented and user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Through this, you can quickly find how the optical properties of your subtrate changes when a multilayered coating is applied on top. The object-oriented design is intentionally chosen to ease the usage and extension of the library. Rather than being a complicated calculator, `opt_sim` provides a design and optimization platform. Shown below are examples of the typical usages of the library as well as its application to Solar Control Coatings and photonic crystals.
+`optics` is an object-oriented and user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Through this, you can quickly find how the optical properties of your subtrate changes when a multilayered coating is applied on top. The object-oriented design is intentionally chosen to ease the usage and extension of the library. Rather than being a complicated calculator, `optics` provides a design and optimization platform. Shown below are examples of the typical usages of the library as well as its application to Solar Control Coatings and photonic crystals.
 
 -----------------------------------------------------------------
 
@@ -21,7 +19,7 @@ The transfer matrix method characterizes each layer in a multilayer thin film by
 
 
 ```python
-import opt_sim as opt
+import optics as opt
 print opt.nklib.material_list
 ```
 
@@ -33,8 +31,8 @@ Each of the materials is a subclass of the `Layer` class. The `MultiLayer` class
 
 
 ```python
-from opt_sim.structure import MultiLayer as ML
-from opt_sim.nklib import *
+from optics.structure import MultiLayer as ML
+from optics.nklib import *
 Ag12 = Ag(12)  # Thickness is the only required input. Default unit is nanometer.
 AlN45 = AlN(45)
 AgStruct = ML([Ag12])  # Default environment-substrate configuration is air-glass.
@@ -120,7 +118,7 @@ plt.text(520, 0.92, "Visible")
 ![output_12_1](https://cloud.githubusercontent.com/assets/10491703/26182662/a132949a-3b47-11e7-9f65-b6eb24884bb2.png)
 
 
-This thin film has a nonuniform transmittance across the visible, making it coloured. `opt_sim` provides RGB calculation of the coating with the (255, 255, 255) normalization format.
+This thin film has a nonuniform transmittance across the visible, making it coloured. `optics` provides RGB calculation of the coating with the (255, 255, 255) normalization format.
 
 
 ```python
