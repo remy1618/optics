@@ -191,8 +191,8 @@ class MultiLayer:
         if not self._TR_calculated:
             self.calculate_TR()
             
-        rgbdata = np.loadtxt("plot support files/rgbdata.txt", skiprows=1)
-        
+        rgbdata = np.loadtxt("plot_support_files/rgbdata.txt", skiprows=1)
+
         rgbwl = rgbdata[:,0]
         struct_wl = self.wl * 1e3 if self.unit == 'micron' else self.wl
         if struct_wl[0] > rgbwl[0] or struct_wl[-1] < rgbwl[-1]:

@@ -7,7 +7,7 @@ import structure as st
 material_list = [
     "Ag", "Al", "AlN", "BK7", "DLC3W", "DLC5W", "DLC10W", "DLC15W", "DLC20W",
     "DLC40W", "DLC60W", "DLC80WA", "ITO", "Ni_30f_nanowire_perp",
-    "Ni_30f_nanowire_para", "PDMS", "ZnO"
+    "Ni_30f_nanowire_para", "Pd", "PDMS", "ZnO"
     ]
 
 
@@ -208,6 +208,17 @@ class Ni_30f_nanowire_para(st.Layer):
         st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
         
 
+class Pd(st.Layer):
+    '''
+    Creates a st.Layer of palladium. Minimum user input is the thickness.
+    '''
+    def __init__(self, thickness, unit='nm'):
+        wl = _Pd_wl / 1e3 if unit == 'micron' else _Pd_wl
+        n = _Pd_nk
+        label = 'Pd'
+        st.Layer.__init__(self, wl, n, thickness, label=label, unit=unit)
+		
+		
 class PDMS(st.Layer):
     '''
     Creates a st.Layer of PDMS. Minimum user input is the thickness.
@@ -290,6 +301,11 @@ _Ni_30f_nanowire_para_nkdata = np.loadtxt(lib_path + "Ni_nanowire_30f_n_para.txt
 _Ni_30f_nanowire_para_wl = _Ni_30f_nanowire_para_nkdata[:,0]
 _Ni_30f_nanowire_para_nk = _Ni_30f_nanowire_para_nkdata[:,1] - 1j * \
                            _Ni_30f_nanowire_para_nkdata[:,2]
+
+_Pd_ndata = np.loadtxt(lib_path + "Pd_n.txt", skiprows=1)
+_Pd_kdata = np.loadtxt(lib_path + "Pd_k.txt", skiprows=1)
+_Pd_wl = _Pd_ndata[:,0] * 1000
+_Pd_nk = _Pd_ndata[:,1] - 1j * _Pd_kdata[:,1]
 
 _PDMS_nkdata = np.loadtxt(lib_path + "PDMS Refractive Index.csv",
                           skiprows=1, delimiter=',')
