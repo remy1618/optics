@@ -1,13 +1,14 @@
 from setuptools import setup
 
-setup(name='opt_sim',
-      version='1.1',
+setup(name='optics',
+      version='0.0.2',
       description='Transfer matrix simulation of 1D optical multilayers',
-      url='http://github.com/remy1618/opt_sim',
+      url='http://github.com/remy1618/optics',
       author='Remy Ko',
       author_email='remy.ko@mail.utoronto.ca',
       license='MIT',
-      packages=['opt_sim'],
+      packages=['optics'],
+      include_package_data=True,
       python_requires='>=2.7, !=3.*, <4',
       install_requires=[
           'numpy>=1.7',
