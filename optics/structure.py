@@ -1,5 +1,9 @@
 import numpy as np
 import calc
+import os.path
+# Append path to support files
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sup_path = dir_path + "\\support_files\\"
 
 class Layer:
 
@@ -191,7 +195,7 @@ class MultiLayer:
         if not self._TR_calculated:
             self.calculate_TR()
             
-        rgbdata = np.loadtxt("plot_support_files/rgbdata.txt", skiprows=1)
+        rgbdata = np.loadtxt(sup_path + "rgbdata.txt", skiprows=1)
 
         rgbwl = rgbdata[:,0]
         struct_wl = self.wl * 1e3 if self.unit == 'micron' else self.wl

@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
 import numpy as np
 import structure as st
+import os.path
+# Append path to support files
+dir_path = os.path.dirname(os.path.realpath(__file__))
+sup_path = dir_path + "\\support_files\\"
 
 def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
        show_solar=False, legend=True, new_figure=True):
@@ -26,6 +30,17 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
 
     if new_figure:
         plt.figure()
+    if not structure_list:
+        return
+    st_min_wl = None
+    st_max_wl = None
+    
+    if show_solar:
+        AM1p5_data = np.loadtxt(sup_path + "ASTMG173.txt", skiprows=2)
+        solar_wl = AM1p5_data[:,0]
+        solar_intens = AM1p5_data[:,3]
+        solar_intens /= max(solar_intens)
+        plt.plot(solar_wl, solar_intens, label="AM1.5", color=(0.55,0.55,0.55))
     for structure in structure_list:
         wl = structure.wl * 1e3 if unit == 'nm' and structure.unit == 'micron' else\
              structure.wl / 1e3 if unit == 'micron' and structure.unit == 'nm' else\
@@ -39,18 +54,19 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
         if 'A' in curves:
             A = 1 - R - T
             plt.plot(wl, A, label=structure.label + ' A')
-    if show_solar:
-        AM1p5_data = np.loadtxt("plot_support_files\\ASTMG173.txt", skiprows=2)
-        solar_wl = AM1p5_data[:,0]
-        solar_intens = AM1p5_data[:,3]
-        solar_intens /= max(solar_intens)
-        plt.plot(solar_wl, solar_intens, label="AM1.5", color=(0.55,0.55,0.55))
+        st_min_wl = min(st_min_wl, wl[0]) if st_min_wl else wl[0]
+        st_max_wl = max(st_max_wl, wl[-1]) if st_max_wl else wl[-1]
+    
     plt.title('Reflectance and Transmittance plots')
     plt.xlabel('Wavelength ({})'.format(unit))
     if min_wl:
         plt.xlim(xmin=min_wl)
+    else:
+        plt.xlim(xmin=st_min_wl)
     if max_wl:
         plt.xlim(xmax=max_wl)
+    else:
+        plt.xlim(xmax=st_max_wl)
     plt.ylim(0, 1)
     if legend:
         plt.legend(loc=0)
@@ -151,11 +167,11 @@ def view(structure, original=True):
     if not structure._color_calculated:
         structure.calculate_color()
         
-    T_image = mpimg.imread("plot_support_files/test_outdoor.png")
-    R_image = mpimg.imread("plot_support_files/test_indoor.png")
+    T_image = mpimg.imread(sup_path + "test_outdoor.png")
+    R_image = mpimg.imread(sup_path + "test_indoor.png")
     
-    T_filter = np.array(structure.T_color, float) / 255
-    R_filter = np.array(structure.R_color, float) / 255
+    T_filter = np.array(structure.T_color, float)
+    R_filter = np.array(structure.R_color, float)
 
     T_image_after = T_image * T_filter
     R_image_after = R_image * R_filter
