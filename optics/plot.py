@@ -177,7 +177,11 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     R_filter = np.array(structure.R_color, float)
 
     T_image_after = T_image * T_filter
-    R_image_after = R_image * R_filter * indoor_lux / outdoor_lux
+    R_image_after = R_image * R_filter 
+    if outdoor_lux > indoor_lux:
+        R_image_after *= indoor_lux / outdoor_lux
+    else:
+        T_image_after *= outdoor_lux / indoor_lux
     overlay = T_image_after + R_image_after
 
     f, ax = plt.subplots(nrows=1, ncols=1)
