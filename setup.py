@@ -13,5 +13,4 @@ setup(name='optics',
       install_requires=[
           'numpy>=1.7',
           'matplotlib>=1.1'
-      ],
-      zip_safe=False)
+      ])
