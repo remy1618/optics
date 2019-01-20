@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import matplotlib.image as mpimg
+from matplotlib.figure import figaspect
 import numpy as np
 import structure as st
 import os.path
@@ -160,9 +161,11 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
     plt.legend(loc=0)   # this gives error at the moment
     return None
 
-def view(structure, original=True):
+def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     '''
-    Shows 4 pictures.
+    Experimental. figaspect for show_original is buggy
+    Default outdoor lux is for AM1.5 and indoor lux for office lighting.
+    See https://en.wikipedia.org/wiki/Daylight and https://en.wikipedia.org/wiki/Lux
     '''
     if not structure._color_calculated:
         structure.calculate_color()
@@ -174,67 +177,25 @@ def view(structure, original=True):
     R_filter = np.array(structure.R_color, float)
 
     T_image_after = T_image * T_filter
-    R_image_after = R_image * R_filter
+    R_image_after = R_image * R_filter * indoor_lux / outdoor_lux
     overlay = T_image_after + R_image_after
 
-    plt.figure()
-    plt.axis("off")
-    plt.imshow(overlay)
+    f, ax = plt.subplots(nrows=1, ncols=1)
+    f.suptitle(structure.label)
+    ax.set_title("Outdoor lux: {:d}    Indoor lux: {:d}".format(int(outdoor_lux), int(indoor_lux)))
+    ax.imshow(overlay)
+    ax.axis("off")
 
-    if original:
-        plt.figure()
-        plt.axis("off")
-        plt.imshow(T_image)
-        plt.figure()
-        plt.axis("off")
-        plt.imshow(R_image)
-
-##    import Image
-##    T = T_image_after * 255
-##    T = T.astype(int)
-##    R = R_image_after * 255
-##    R = R.astype(int)
-##    I = overlay * 255
-##    I = I.astype(int)
-##    im_T = Image.fromarray(T_image_after, 'RGB')
-##    im_R = Image.fromarray(R_image_after, 'RGB')
-##    im = Image.fromarray(overlay, 'RGB')
-##    os.chdir("..")
-##    im_T.save("outdoors.png")
-##    im_R.save("indoors.png")
-##    im.save("window_view.png")
-##    mpimg.imsave("outdoors.png", T_image)
-##    mpimg.imsave("indoors.png", R_image)
-##    mpimg.imsave("window_view.png", overlay)
-##    os.chdir("opt_sim")
-
-##    f, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, sharex='col', sharey='row')
-##    ax1.axis("off")
-##    ax1.imshow(T_image)
-##    ax2.axis("off")
-##    ax2.imshow(T_image * T_filter)
-##    ax3.axis("off")
-##    ax3.imshow(R_image)
-##    ax4.axis("off")
-##    ax4.imshow(R_image * R_filter)
-##    plt.tight_layout()
-    
-##    plt.subplot(2, 2, 1)
-##    plt.axis("off")
-##    plt.imshow(T_image)
-##
-##    plt.subplot(2, 2, 2)
-##    plt.axis("off")
-##    plt.imshow(T_image * T_filter)
-##
-##    plt.subplot(2, 2, 3)
-##    plt.axis("off")
-##    plt.imshow(R_image)
-##
-##    plt.subplot(2, 2, 4)
-##    plt.axis("off")
-##    plt.imshow(R_image * R_filter)
-    
+    if show_original:
+        w, h = figaspect(2.)
+        f2, ((ax1), (ax2)) = plt.subplots(nrows=2, ncols=1, sharex='col', figsize=(w,h))
+        f2.subplots_adjust(left=0.03, right=0.97, hspace=0.0, wspace=0.0)
+        ax1.axis("off")
+        ax2.axis("off")
+        ax1.set_aspect("equal")
+        ax2.set_aspect("equal")
+        ax1.imshow(T_image)
+        ax2.imshow(R_image)    
     
 def show():
     plt.show()
