@@ -160,7 +160,7 @@ class MultiLayer:
         structure_view += separator + '\n'
         return structure_view
 
-    def calculate_TR(self):
+    def calculate_TR(self, a=0.):
         if not self._layers_list:
             raise EmptyStructureException("Structure is empty.")
         
@@ -183,7 +183,7 @@ class MultiLayer:
         d = np.array([layer.d / 1e9 if layer.unit == 'nm' else layer.d / 1e6 \
                       for layer in self._layers_list[::-1]])
 
-        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns)
+        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a=a)
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
