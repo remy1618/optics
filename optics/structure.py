@@ -173,7 +173,7 @@ class MultiLayer:
             L_wl = L.wl * 1e3 if self.unit == 'nm' and L.unit == 'micron' else\
                    L.wl / 1e3 if self.unit == 'micron' and L.unit == 'nm' else\
                    L.wl
-            layer_n = calc.interpolate(L_wl, L.n, self.wl)
+            layer_n = np.interp(self.wl, L_wl, L.n)
             n[num_layers - 1 - i] = layer_n
 
         wl = self.wl / 1e9 if self.unit == 'nm' else self.wl / 1e6
@@ -205,8 +205,8 @@ class MultiLayer:
         rgb_sens = rgbdata[:,1:]
         rgb_sens /= np.sum(rgb_sens, 0) # Normalize sum to 1
 
-        T_interp = calc.interpolate(struct_wl, self.T, rgbwl)
-        R_interp = calc.interpolate(struct_wl, self.R, rgbwl)
+		T_interp = np.interp(rgbwl, struct_wl, self.T)
+		R_interp = np.interp(rgbwl, struct_wl, self.R)
 
         # Gives rgb in 0~1 float range
         self.T_color = np.sum(T_interp[:,np.newaxis] * rgb_sens, 0)
