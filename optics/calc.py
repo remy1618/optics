@@ -1,4 +1,4 @@
-from numpy import pi, cos, sin, sqrt
+from numpy import pi, cos, sin, arcsin, sqrt
 import numpy as np
 
 # Taken from Macleod - Thin Film Optical Filters (2001)
@@ -12,7 +12,7 @@ import numpy as np
 # Ns = Y * cos(a) tilted optical admittance for s-polarization
 eps0 = 8.85e-12
 mu0 = 4e-7 * pi
-Y0 = sqrt(eps0 / mu0)
+Yfs = sqrt(eps0 / mu0) # fs for free-space
 
 def interpolate(wl_raw, f_raw, wl):
     '''
@@ -31,8 +31,7 @@ def _transfer_matrix(k0, n, d, a, pol="p"):
     Outputs a 3d array of shape (N, 2, 2) where N is the number of wavevectors
     and each of the 2-by-2 sub-array associated with the particular wavevector.
     '''
-    Y = n * Y0
-    a *= 2*pi/360.
+    Y = n * Yfs
     if pol == "p":
         N = Y / cos(a)
     if pol == "s":
@@ -53,7 +52,7 @@ def _transfer_matrix(k0, n, d, a, pol="p"):
     M[:,1,1] = M11
     return M
 
-def TandR(k0, n, d, n0, ns, a):
+def TandR(k0, n, d, n0, ns, a0):
     '''
     k0 1d array of length #_of_wavelengths
     n 2d array of length (#_of_layers, #_of_wavelengths)
@@ -62,14 +61,17 @@ def TandR(k0, n, d, n0, ns, a):
     num_of_wavelengths = k0.shape[0]
     num_of_layers = d.shape[0]
     
-    Ys = ns * Y0
-    Y = n * Y0
+    Y0 = n0 * Yfs
+    Ys = ns * Yfs
+    Y = n * Yfs
+    a0 *= 2*pi/360
 
     # Initialize M as num_of_wavelengths-dimensional array of identity matrix
     M = np.zeros((num_of_wavelengths, 2, 2), complex)
     M[:,0,0], M[:,1,1] = 1, 1
     for i in range(num_of_layers):
         # Maybe possible to speed up here by taking out loop
+        a = arcsin(n0 * sin(a0) / n[i])
         M = np.einsum('ijk,ikl->ijl',
                       M, _transfer_matrix(k0, n[i], d[i], a))
     B = M[:,0,0] + Ys * M[:,0,1]

@@ -160,7 +160,7 @@ class MultiLayer:
         structure_view += separator + '\n'
         return structure_view
 
-    def calculate_TR(self, a=0.):
+    def calculate_TR(self, a0=0.):
         if not self._layers_list:
             raise EmptyStructureException("Structure is empty.")
         
@@ -183,7 +183,7 @@ class MultiLayer:
         d = np.array([layer.d / 1e9 if layer.unit == 'nm' else layer.d / 1e6 \
                       for layer in self._layers_list[::-1]])
 
-        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a=a)
+        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a0=a0)
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
@@ -205,8 +205,8 @@ class MultiLayer:
         rgb_sens = rgbdata[:,1:]
         rgb_sens /= np.sum(rgb_sens, 0) # Normalize sum to 1
 
-		T_interp = np.interp(rgbwl, struct_wl, self.T)
-		R_interp = np.interp(rgbwl, struct_wl, self.R)
+        T_interp = np.interp(rgbwl, struct_wl, self.T)
+        R_interp = np.interp(rgbwl, struct_wl, self.R)
 
         # Gives rgb in 0~1 float range
         self.T_color = np.sum(T_interp[:,np.newaxis] * rgb_sens, 0)
