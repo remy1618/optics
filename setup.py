@@ -1,5 +1,3 @@
-# run command
-# python setup.py sdist bdist_wheel
 from setuptools import setup
 
 setup(name='optics',

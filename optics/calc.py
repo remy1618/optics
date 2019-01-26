@@ -14,19 +14,7 @@ eps0 = 8.85e-12
 mu0 = 4e-7 * pi
 Yfs = sqrt(eps0 / mu0) # fs for free-space
 
-def interpolate(wl_raw, f_raw, wl):
-    '''
-    Precondition: wl is within the range of wl_raw
-    f is a function of wl_raw.
-    wl is the new domain that f is mapped onto via interpolation.
-    All inputs are 1darrays.
-    '''
-    if f_raw.dtype == complex:
-        return np.interp(wl, wl_raw, f_raw.real) + \
-               1j * np.interp(wl, wl_raw, f_raw.imag)
-    return np.interp(wl, wl_raw, f_raw)
-
-def _transfer_matrix(k0, n, d, a, pol="p"):
+def _transfer_matrix(k0, n, d, a, pol):
     '''
     Outputs a 3d array of shape (N, 2, 2) where N is the number of wavevectors
     and each of the 2-by-2 sub-array associated with the particular wavevector.
@@ -52,7 +40,7 @@ def _transfer_matrix(k0, n, d, a, pol="p"):
     M[:,1,1] = M11
     return M
 
-def TandR(k0, n, d, n0, ns, a0):
+def _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="p"):
     '''
     k0 1d array of length #_of_wavelengths
     n 2d array of length (#_of_layers, #_of_wavelengths)
@@ -73,12 +61,27 @@ def TandR(k0, n, d, n0, ns, a0):
         # Maybe possible to speed up here by taking out loop
         a = arcsin(n0 * sin(a0) / n[i])
         M = np.einsum('ijk,ikl->ijl',
-                      M, _transfer_matrix(k0, n[i], d[i], a))
+                      M, _transfer_matrix(k0, n[i], d[i], a, pol))
     B = M[:,0,0] + Ys * M[:,0,1]
     C = M[:,1,0] + Ys * M[:,1,1]
+    return B, C
 
+def TandR(k0, n, d, n0, ns, a0, pol):
+    Y0 = n0 * Yfs
+    Ys = ns * Yfs
+    B, C = _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol)
     r = (Y0*B - C) / (Y0*B + C)
     R = (np.absolute(r))**2
     T = 4 * Y0 * Ys.real / (np.absolute(Y0*B + C))**2
-
     return T, R
+    
+def PSIandDelta(k0, n, d, n0, ns, a0, pol):
+    Y0 = n0 * Yfs
+    Bp, Cp = _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="p")
+    Bs, Cs = _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="s")
+    rp = (Y0*Bp - Cp) / (Y0*Bp + Cp)
+    rs = (Y0*Bs - Cs) / (Y0*Bs + Cs)
+    rho = rp / rs
+    tanPSI = np.absolute(rho)
+    cosDELTA = np.angle(rho)
+    return tanPSI, cosDELTA

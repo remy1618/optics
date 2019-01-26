@@ -160,7 +160,7 @@ class MultiLayer:
         structure_view += separator + '\n'
         return structure_view
 
-    def calculate_TR(self, a0=0.):
+    def calculate_TR(self, a0=0., pol="p"):
         if not self._layers_list:
             raise EmptyStructureException("Structure is empty.")
         
@@ -183,7 +183,7 @@ class MultiLayer:
         d = np.array([layer.d / 1e9 if layer.unit == 'nm' else layer.d / 1e6 \
                       for layer in self._layers_list[::-1]])
 
-        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a0=a0)
+        self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a0=a0, pol=pol)
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
@@ -227,6 +227,13 @@ class MultiLayer:
         self.R_color = None
         self._TR_calculated = False
         self._color_calculated = False
+
+    def copy(self):
+        return MultiLayer(layer_list=self._layers_list[:],
+                          unit=self.unit, label=self.label,
+                          min_wl=self._min_wl, max_wl=self._max_wl,
+                          wl_step=self._wl_step, n0=self.n0,
+                          ns=self.ns)
 
 
 
