@@ -24,18 +24,16 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
     if not unit in ['nm', 'micron']:
             raise DataFormatException(
                 "unit should be given as 'nm' or 'micron'")
-
     for structure in structure_list:
         if not structure._TR_calculated:
             structure.calculate_TR()
-
-    if new_figure:
-        plt.figure()
     if not structure_list:
         return
+
     st_min_wl = None
     st_max_wl = None
-    
+    if new_figure:
+        plt.figure()
     if show_solar:
         AM1p5_data = np.loadtxt(sup_path + "ASTMG173.txt", skiprows=2)
         solar_wl = AM1p5_data[:,0]
@@ -84,7 +82,6 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
         layer_list = [layer_list]
     if isinstance(layer_list, st.MultiLayer):
         layer_list = layer_list._layers_list
-        
     if not unit in ['nm', 'micron']:
             raise DataFormatException(
                 "unit should be given as 'nm' or 'micron'")
@@ -200,7 +197,45 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
         ax2.set_aspect("equal")
         ax1.imshow(T_image)
         ax2.imshow(R_image)    
+
+def ellipsometry(structure_list, angle=53., min_eV=3.0, max_eV=4.5, legend=True):
+    # Alternate call signature for convenience
+    if isinstance(structure_list, st.MultiLayer):
+        structure_list = [structure_list]
+    for structure in structure_list:
+        if not structure._tanPSIcosDELTA_calculated:
+            structure.calculate_tanPSIcosDELTA(angle)
+    if not structure_list:
+        return
+
+    st_min_eV = None
+    st_max_eV = None
+    for structure in structure_list:
+        # Assumes only valid units are 'nm' and 'micron'
+        E = 1240 / structure.wl[::-1] if structure.unit == 'nm' else\
+            1.24 / structure.wl[::-1]
+        st_min_eV = min(st_min_eV, E[0]) if st_min_eV else E[0]
+        st_max_eV = min(st_max_eV, E[-1]) if st_max_eV else E[-1]
     
+    tanPSI = structure.tanPSI[::-1]
+    cosDELTA = structure.cosDELTA[::-1]
+    for var, label in [(tanPSI, "tan(PSI)"), (cosDELTA, "cos(DELTA)")]:
+        plt.figure()
+        for structure in structure_list:
+            plt.plot(E, var, label=structure.label + ' ' + label)
+            plt.title('Ellipsometry ' + label)
+            plt.xlabel('Energy (eV)')
+            if min_eV:
+                plt.xlim(xmin=min_eV)
+            else:
+                plt.xlim(xmin=st_min_eV)
+            if max_eV:
+                plt.xlim(xmax=max_eV)
+            else:
+                plt.xlim(xmax=st_max_eV)
+            if legend:
+                plt.legend(loc=0)
+
 def show():
     plt.show()
 

@@ -83,8 +83,11 @@ class MultiLayer:
         self.A = None
         self.T_color = None
         self.R_color = None
+        self.tanPSI = None
+        self.cosDELTA = None
         self._TR_calculated = False
         self._color_calculated = False
+        self._tanPSIcosDELTA_calculated = False
         
         if layer_list:
             for layer in layer_list:
@@ -160,13 +163,9 @@ class MultiLayer:
         structure_view += separator + '\n'
         return structure_view
 
-    def calculate_TR(self, a0=0., pol="p"):
-        if not self._layers_list:
-            raise EmptyStructureException("Structure is empty.")
-        
+    def _get_k0_n_d_from_self(self):
         num_layers = len(self._layers_list)
         num_wl = len(self.wl)
-
         # n a 2d array of layers (row) and wavelength (column)
         n = np.empty([num_layers, num_wl], complex)
         for i, L in enumerate(self._layers_list):
@@ -175,17 +174,25 @@ class MultiLayer:
                    L.wl
             layer_n = np.interp(self.wl, L_wl, L.n)
             n[num_layers - 1 - i] = layer_n
-
         wl = self.wl / 1e9 if self.unit == 'nm' else self.wl / 1e6
         k0 = 2 * np.pi / wl
-
         # d has error: need to account for mismatchc of Layer.unit and ML.unit
         d = np.array([layer.d / 1e9 if layer.unit == 'nm' else layer.d / 1e6 \
                       for layer in self._layers_list[::-1]])
+        return k0, n, d
 
+    def calculate_TR(self, a0=0., pol="p"):
+        if not self._layers_list:
+            raise EmptyStructureException("Structure is empty.")
+        k0, n, d = self._get_k0_n_d_from_self()
         self.T, self.R = calc.TandR(k0, n, d, n0=self.n0, ns=self.ns ,a0=a0, pol=pol)
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
+
+    def calculate_tanPSIcosDELTA(self, angle=53.):
+        k0, n, d = self._get_k0_n_d_from_self()
+        self.tanPSI, self.cosDELTA = calc.tanPSIandcosDELTA(k0, n, d, n0=self.n0, ns=self.ns, a0=angle)
+        self._tanPSIcosDELTA_calculated = True
 
     def calculate_color(self):
         '''
@@ -225,8 +232,11 @@ class MultiLayer:
         self.A = None
         self.T_color = None
         self.R_color = None
+        self.tanPSI = None
+        self.cosDELTA = None
         self._TR_calculated = False
         self._color_calculated = False
+        self._tanPSIcosDELTA_calculated = False
 
     def copy(self):
         return MultiLayer(layer_list=self._layers_list[:],

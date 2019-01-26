@@ -40,7 +40,7 @@ def _transfer_matrix(k0, n, d, a, pol):
     M[:,1,1] = M11
     return M
 
-def _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="p"):
+def _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol):
     '''
     k0 1d array of length #_of_wavelengths
     n 2d array of length (#_of_layers, #_of_wavelengths)
@@ -60,8 +60,7 @@ def _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="p"):
     for i in range(num_of_layers):
         # Maybe possible to speed up here by taking out loop
         a = arcsin(n0 * sin(a0) / n[i])
-        M = np.einsum('ijk,ikl->ijl',
-                      M, _transfer_matrix(k0, n[i], d[i], a, pol))
+        M = np.einsum('ijk,ikl->ijl', M, _transfer_matrix(k0, n[i], d[i], a, pol))
     B = M[:,0,0] + Ys * M[:,0,1]
     C = M[:,1,0] + Ys * M[:,1,1]
     return B, C
@@ -75,7 +74,7 @@ def TandR(k0, n, d, n0, ns, a0, pol):
     T = 4 * Y0 * Ys.real / (np.absolute(Y0*B + C))**2
     return T, R
     
-def PSIandDelta(k0, n, d, n0, ns, a0, pol):
+def tanPSIandcosDELTA(k0, n, d, n0, ns, a0):
     Y0 = n0 * Yfs
     Bp, Cp = _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="p")
     Bs, Cs = _BandC_from_transfer_matrix(k0, n, d, n0, ns, a0, pol="s")
@@ -83,5 +82,6 @@ def PSIandDelta(k0, n, d, n0, ns, a0, pol):
     rs = (Y0*Bs - Cs) / (Y0*Bs + Cs)
     rho = rp / rs
     tanPSI = np.absolute(rho)
-    cosDELTA = np.angle(rho)
+    DELTA = np.angle(rho)
+    cosDELTA = cos(DELTA)
     return tanPSI, cosDELTA
