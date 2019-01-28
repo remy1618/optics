@@ -210,31 +210,48 @@ def ellipsometry(structure_list, angle=53., min_eV=3.0, max_eV=4.5, legend=True)
 
     st_min_eV = None
     st_max_eV = None
+    plt.figure()
     for structure in structure_list:
         # Assumes only valid units are 'nm' and 'micron'
         E = 1240 / structure.wl[::-1] if structure.unit == 'nm' else\
             1.24 / structure.wl[::-1]
         st_min_eV = min(st_min_eV, E[0]) if st_min_eV else E[0]
         st_max_eV = min(st_max_eV, E[-1]) if st_max_eV else E[-1]
-    
-    tanPSI = structure.tanPSI[::-1]
-    cosDELTA = structure.cosDELTA[::-1]
-    for var, label in [(tanPSI, "tan(PSI)"), (cosDELTA, "cos(DELTA)")]:
-        plt.figure()
-        for structure in structure_list:
-            plt.plot(E, var, label=structure.label + ' ' + label)
-            plt.title('Ellipsometry ' + label)
-            plt.xlabel('Energy (eV)')
-            if min_eV:
-                plt.xlim(xmin=min_eV)
-            else:
-                plt.xlim(xmin=st_min_eV)
-            if max_eV:
-                plt.xlim(xmax=max_eV)
-            else:
-                plt.xlim(xmax=st_max_eV)
-            if legend:
-                plt.legend(loc=0)
+
+        tanPSI = structure.tanPSI[::-1]
+        plt.plot(E, tanPSI, label=structure.label + ' tan(PSI)')
+        plt.title('Ellipsometry tan(PSI)')
+        plt.xlabel('Energy (eV)')
+        if min_eV:
+            plt.xlim(xmin=min_eV)
+        else:
+            plt.xlim(xmin=st_min_eV)
+        if max_eV:
+            plt.xlim(xmax=max_eV)
+        else:
+            plt.xlim(xmax=st_max_eV)
+        if legend:
+            plt.legend(loc=0)
+
+    plt.figure()
+    for structure in structure_list:
+        # Assumes only valid units are 'nm' and 'micron'
+        E = 1240 / structure.wl[::-1] if structure.unit == 'nm' else\
+            1.24 / structure.wl[::-1]
+        cosDELTA = structure.cosDELTA[::-1]
+        plt.plot(E, cosDELTA, label=structure.label + ' cos(DELTA)')
+        plt.title('Ellipsometry cos(DELTA)')
+        plt.xlabel('Energy (eV)')
+        if min_eV:
+            plt.xlim(xmin=min_eV)
+        else:
+            plt.xlim(xmin=st_min_eV)
+        if max_eV:
+            plt.xlim(xmax=max_eV)
+        else:
+            plt.xlim(xmax=st_max_eV)
+        if legend:
+            plt.legend(loc=0)
 
 def show():
     plt.show()
