@@ -189,9 +189,10 @@ class MultiLayer:
         self.A = 1 - self.T - self.R
         self._TR_calculated = True
 
-    def calculate_tanPSIcosDELTA(self, angle=53.):
+    def calculate_tanPSIcosDELTA(self, angle):
         k0, n, d = self._get_k0_n_d_from_self()
-        self.tanPSI, self.cosDELTA = calc.tanPSIandcosDELTA(k0, n, d, n0=self.n0, ns=self.ns, a0=angle)
+        a0 = angle * 2 * np.pi / 360
+        self.tanPSI, self.cosDELTA = calc.tanPSIandcosDELTA(k0, n, d, n0=self.n0, ns=self.ns, a0=a0)
         self._tanPSIcosDELTA_calculated = True
 
     def calculate_color(self):

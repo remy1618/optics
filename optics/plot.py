@@ -9,7 +9,7 @@ dir_path = os.path.dirname(os.path.realpath(__file__))
 sup_path = dir_path + "\\support_files\\"
 
 def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
-       show_solar=False, legend=True, new_figure=True):
+       show_solar=False, legend=True, new_figure=True, grid=False):
     '''
     Plot the reflectance and transmittance curve of given structures in the
     window. If given, min_wl and max_wl sets the wavelength range in the unit
@@ -69,6 +69,8 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
     plt.ylim(0, 1)
     if legend:
         plt.legend(loc=0)
+    if grid:
+        plt.grid(True)
 
 def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
        grid=False):
@@ -107,7 +109,7 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
             n = layer.n.real
             plt.plot(wl, n, label=layer.label + ' n')
             if grid:
-                plt.grid("on")
+                plt.grid(True)
         plt.legend(loc=0)
 
         material_list = []
@@ -128,7 +130,7 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
             k = -layer.n.imag
             plt.plot(wl, k, label=layer.label + ' k')
             if grid:
-                plt.grid("on")
+                plt.grid(True)
         plt.legend(loc=0)
         return None
 
@@ -148,7 +150,7 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
         if 'k' in curves:
             plt.plot(wl, k, label=layer.label + ' k')
         if grid:
-                plt.grid("on")
+                plt.grid(True)
     plt.title('Refractive index plots')
     plt.xlabel('Wavelength ({})'.format(unit))
     if min_wl:
@@ -160,7 +162,7 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
 
 def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     '''
-    Experimental. figaspect for show_original is buggy
+    Experimental. Lux ratio is is buggy
     Default outdoor lux is for AM1.5 and indoor lux for office lighting.
     See https://en.wikipedia.org/wiki/Daylight and https://en.wikipedia.org/wiki/Lux
     '''
@@ -198,7 +200,8 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
         ax1.imshow(T_image)
         ax2.imshow(R_image)    
 
-def ellipsometry(structure_list, angle=53., min_eV=3.0, max_eV=4.5, legend=True):
+def ellipsometry(structure_list, angle=51., min_eV=None, max_eV=None,
+                 legend=True, grid=True):
     # Alternate call signature for convenience
     if isinstance(structure_list, st.MultiLayer):
         structure_list = [structure_list]
@@ -211,47 +214,41 @@ def ellipsometry(structure_list, angle=53., min_eV=3.0, max_eV=4.5, legend=True)
     st_min_eV = None
     st_max_eV = None
     plt.figure()
+    plt.suptitle("Ellipsometry at {:.1f} degree incident angle".format(angle))
+    ax1 = plt.subplot(211)
+    ax2 = plt.subplot(212, sharex=ax1)
+    plt.setp(ax1.get_xticklabels(), visible=False)
     for structure in structure_list:
         # Assumes only valid units are 'nm' and 'micron'
         E = 1240 / structure.wl[::-1] if structure.unit == 'nm' else\
             1.24 / structure.wl[::-1]
+        tanPSI = structure.tanPSI[::-1]
+        cosDELTA = structure.cosDELTA[::-1]
         st_min_eV = min(st_min_eV, E[0]) if st_min_eV else E[0]
         st_max_eV = min(st_max_eV, E[-1]) if st_max_eV else E[-1]
 
-        tanPSI = structure.tanPSI[::-1]
-        plt.plot(E, tanPSI, label=structure.label + ' tan(PSI)')
-        plt.title('Ellipsometry tan(PSI)')
-        plt.xlabel('Energy (eV)')
-        if min_eV:
-            plt.xlim(xmin=min_eV)
-        else:
-            plt.xlim(xmin=st_min_eV)
-        if max_eV:
-            plt.xlim(xmax=max_eV)
-        else:
-            plt.xlim(xmax=st_max_eV)
-        if legend:
-            plt.legend(loc=0)
+        ax1.set_title('tan(PSI)')
+        ax1.plot(E, tanPSI, label=structure.label)
+        ax2.set_title('cos(DELTA)')
+        ax2.plot(E, cosDELTA, label=structure.label)
 
-    plt.figure()
-    for structure in structure_list:
-        # Assumes only valid units are 'nm' and 'micron'
-        E = 1240 / structure.wl[::-1] if structure.unit == 'nm' else\
-            1.24 / structure.wl[::-1]
-        cosDELTA = structure.cosDELTA[::-1]
-        plt.plot(E, cosDELTA, label=structure.label + ' cos(DELTA)')
-        plt.title('Ellipsometry cos(DELTA)')
-        plt.xlabel('Energy (eV)')
+        ax2.set_xlabel('Energy (eV)')
         if min_eV:
-            plt.xlim(xmin=min_eV)
+            ax2.set_xlim(xmin=min_eV)
         else:
-            plt.xlim(xmin=st_min_eV)
+            ax2.set_xlim(xmin=st_min_eV)
         if max_eV:
-            plt.xlim(xmax=max_eV)
+            ax2.set_xlim(xmax=max_eV)
         else:
-            plt.xlim(xmax=st_max_eV)
+            ax2.set_xlim(xmax=st_max_eV)
+
         if legend:
-            plt.legend(loc=0)
+            ax1.legend(loc=0)
+            ax2.legend(loc=0)
+        if grid:
+            ax1.grid(True)
+            ax2.grid(True)
+        plt.tight_layout(rect=[0,0,1,0.95])
 
 def show():
     plt.show()
