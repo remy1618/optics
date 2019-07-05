@@ -3,7 +3,7 @@ import calc
 import os.path
 # Append path to support files
 dir_path = os.path.dirname(os.path.realpath(__file__))
-sup_path = dir_path + "\\support_files\\"
+sup_path = os.path.join(dir_path, "support_files")
 
 class Layer:
 

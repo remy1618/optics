@@ -241,24 +241,24 @@ class ZnO(st.Layer):
 
 # Import data
 dir_path = os.path.dirname(os.path.realpath(__file__))
-lib_path = dir_path + "\\nklib_data\\"
+lib_path = os.path.join(dir_path, "nklib_data")
 
-_Ag_ndata = np.loadtxt(lib_path + "Ag_n.txt", skiprows=1)
-_Ag_kdata = np.loadtxt(lib_path + "Ag_k.txt", skiprows=1)
+_Ag_ndata = np.loadtxt(os.path.join(lib_path, "Ag_n.txt"), skiprows=1)
+_Ag_kdata = np.loadtxt(os.path.join(lib_path, "Ag_k.txt"), skiprows=1)
 _Ag_wl = _Ag_ndata[:,0] * 1000
 _Ag_nk = _Ag_ndata[:,1] - 1j * _Ag_kdata[:,1]
 
-_Al_ndata = np.loadtxt(lib_path + "Al_n_Rakic1998.txt", skiprows=1)
-_Al_kdata = np.loadtxt(lib_path + "Al_k_Rakic1998.txt", skiprows=1)
+_Al_ndata = np.loadtxt(os.path.join(lib_path, "Al_n_Rakic1998.txt"), skiprows=1)
+_Al_kdata = np.loadtxt(os.path.join(lib_path, "Al_k_Rakic1998.txt"), skiprows=1)
 _Al_wl = _Al_ndata[:,0] * 1000
 _Al_nk = _Al_ndata[:,1] - 1j * _Al_kdata[:,1]
 
-_AlN_nkdata = np.loadtxt(lib_path + "AlN_nk.txt", skiprows=1)
+_AlN_nkdata = np.loadtxt(os.path.join(lib_path, "AlN_nk.txt"), skiprows=1)
 _AlN_wl = _AlN_nkdata[:,0]
 _AlN_nk = _AlN_nkdata[:,1] - 1j * _AlN_nkdata[:,2]
 
-_BK7_ndata = np.loadtxt(lib_path + "BK7_n.txt", skiprows=1)
-_BK7_kdata = np.loadtxt(lib_path + "BK7_k.txt", skiprows=1)
+_BK7_ndata = np.loadtxt(os.path.join(lib_path, "BK7_n.txt"), skiprows=1)
+_BK7_kdata = np.loadtxt(os.path.join(lib_path, "BK7_k.txt"), skiprows=1)
 _BK7_wl = _BK7_ndata[:,0] * 1000
 # BK7 doesn't have the same number of data points for n and k
 _wl_temp = _BK7_kdata[:,0] * 1000
@@ -266,14 +266,14 @@ _k_temp = _BK7_kdata[:,1]
 _BK7_k = np.interp(_BK7_wl, _wl_temp, _k_temp)
 _BK7_nk = _BK7_ndata[:,1] - 1j * _BK7_k
 
-_DLC_nkdata = [np.loadtxt(lib_path + "DLC{}W_nk.txt".format(n), skiprows=1) for \
+_DLC_nkdata = [np.loadtxt(os.path.join(lib_path, "DLC{}W_nk.txt").format(n), skiprows=1) for \
                n in [3, 5, 10, 15, 20, 40, 60]]
 _DLC_wl = [_DLC_nkdata[i][:,0] for i in range(7)]
 _DLC_nk = [_DLC_nkdata[i][:,1] - 1j * _DLC_nkdata[i][:,2] for i in range(7)]
 _DLC3W_wl, _DLC5W_wl, _DLC10W_wl, _DLC15W_wl, _DLC20W_wl, _DLC40W_wl, _DLC60W_wl = _DLC_wl
 _DLC3W_nk, _DLC5W_nk, _DLC10W_nk, _DLC15W_nk, _DLC20W_nk, _DLC40W_nk, _DLC60W_nk = _DLC_nk
 
-_DLC_ext_nkdata = [np.loadtxt(lib_path + "DLC{}W_extended_nk.txt".format(n), skiprows=1) \
+_DLC_ext_nkdata = [np.loadtxt(os.path.join(lib_path, "DLC{}W_extended_nk.txt").format(n), skiprows=1) \
                    for n in [3, 5, 10, 15, 20, 40, 60]]
 _DLC_ext_wl = [_DLC_ext_nkdata[i][:,0] for i in range(7)]
 _DLC_ext_nk = [_DLC_ext_nkdata[i][:,1] - 1j * _DLC_ext_nkdata[i][:,2] \
@@ -282,35 +282,35 @@ _DLC3W_ext_wl, _DLC5W_ext_wl, _DLC10W_ext_wl, _DLC15W_ext_wl, _DLC20W_ext_wl, _D
 _DLC3W_ext_nk, _DLC5W_ext_nk, _DLC10W_ext_nk, _DLC15W_ext_nk, _DLC20W_ext_nk, _DLC40W_ext_nk, _DLC60W_ext_nk = _DLC_ext_nk
 DLC_list = [DLC3W, DLC5W, DLC10W, DLC15W, DLC20W, DLC40W, DLC60W]
 
-_DLC80WA_nkdata = np.loadtxt(lib_path + "DLC80WAnode_nk.txt", skiprows=1)
+_DLC80WA_nkdata = np.loadtxt(os.path.join(lib_path, "DLC80WAnode_nk.txt"), skiprows=1)
 _DLC80WA_wl = _DLC80WA_nkdata[:,0] * 1000
 _DLC80WA_nk = _DLC80WA_nkdata[:,1] - 1j * _DLC80WA_nkdata[:,2]
 
-_ITO_ndata = np.loadtxt(lib_path + "ITO_n_Konig.txt", skiprows=1)
-_ITO_kdata = np.loadtxt(lib_path + "ITO_k_Konig.txt", skiprows=1)
+_ITO_ndata = np.loadtxt(os.path.join(lib_path, "ITO_n_Konig.txt"), skiprows=1)
+_ITO_kdata = np.loadtxt(os.path.join(lib_path, "ITO_k_Konig.txt"), skiprows=1)
 _ITO_wl = _ITO_ndata[:,0] * 1000
 _ITO_nk = _ITO_ndata[:,1] - 1j * _ITO_kdata[:,1]
 
-_Ni_30f_nanowire_perp_nkdata = np.loadtxt(lib_path + "Ni_nanowire_30f_n_perp.txt", skiprows=1)
+_Ni_30f_nanowire_perp_nkdata = np.loadtxt(os.path.join(lib_path, "Ni_nanowire_30f_n_perp.txt"), skiprows=1)
 _Ni_30f_nanowire_perp_wl = _Ni_30f_nanowire_perp_nkdata[:,0]
 _Ni_30f_nanowire_perp_nk = _Ni_30f_nanowire_perp_nkdata[:,1] - 1j * \
                            _Ni_30f_nanowire_perp_nkdata[:,2]
 
-_Ni_30f_nanowire_para_nkdata = np.loadtxt(lib_path + "Ni_nanowire_30f_n_para.txt", skiprows=1)
+_Ni_30f_nanowire_para_nkdata = np.loadtxt(os.path.join(lib_path, "Ni_nanowire_30f_n_para.txt"), skiprows=1)
 _Ni_30f_nanowire_para_wl = _Ni_30f_nanowire_para_nkdata[:,0]
 _Ni_30f_nanowire_para_nk = _Ni_30f_nanowire_para_nkdata[:,1] - 1j * \
                            _Ni_30f_nanowire_para_nkdata[:,2]
 
-_Pd_ndata = np.loadtxt(lib_path + "Pd_n.txt", skiprows=1)
-_Pd_kdata = np.loadtxt(lib_path + "Pd_k.txt", skiprows=1)
+_Pd_ndata = np.loadtxt(os.path.join(lib_path, "Pd_n.txt"), skiprows=1)
+_Pd_kdata = np.loadtxt(os.path.join(lib_path, "Pd_k.txt"), skiprows=1)
 _Pd_wl = _Pd_ndata[:,0] * 1000
 _Pd_nk = _Pd_ndata[:,1] - 1j * _Pd_kdata[:,1]
 
-_PDMS_nkdata = np.loadtxt(lib_path + "PDMS Refractive Index.csv",
+_PDMS_nkdata = np.loadtxt(os.path.join(lib_path, "PDMS Refractive Index.csv"),
                           skiprows=1, delimiter=',')
 _PDMS_wl = _PDMS_nkdata[:,0] * 1000
 _PDMS_nk = _PDMS_nkdata[:,1] - 1j * _PDMS_nkdata[:,2]
 
-_ZnO_nkdata = np.loadtxt(lib_path + "ZnO_nk.txt", skiprows=1)
+_ZnO_nkdata = np.loadtxt(os.path.join(lib_path, "ZnO_nk.txt"), skiprows=1)
 _ZnO_wl = _ZnO_nkdata[:,0] * 1000
 _ZnO_nk = _ZnO_nkdata[:,1] - 1j * _ZnO_nkdata[:,2]

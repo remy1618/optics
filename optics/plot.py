@@ -6,7 +6,7 @@ import structure as st
 import os.path
 # Append path to support files
 dir_path = os.path.dirname(os.path.realpath(__file__))
-sup_path = dir_path + "\\support_files\\"
+sup_path = os.path.join(dir_path, "support_files")
 
 def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
        show_solar=False, legend=True, new_figure=True, grid=False):
