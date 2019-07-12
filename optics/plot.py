@@ -35,7 +35,7 @@ def TR(structure_list, min_wl=None, max_wl=None, curves='TR', unit='nm',
     if new_figure:
         plt.figure()
     if show_solar:
-        AM1p5_data = np.loadtxt(sup_path + "ASTMG173.txt", skiprows=2)
+        AM1p5_data = np.loadtxt(os.path.join(sup_path, "ASTMG173.txt"), skiprows=2)
         solar_wl = AM1p5_data[:,0]
         solar_intens = AM1p5_data[:,3]
         solar_intens /= max(solar_intens)
@@ -169,8 +169,8 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     if not structure._color_calculated:
         structure.calculate_color()
         
-    T_image = mpimg.imread(sup_path + "test_outdoor.png")
-    R_image = mpimg.imread(sup_path + "test_indoor.png")
+    T_image = mpimg.imread(os.path.join(sup_path, "test_outdoor.png"))
+    R_image = mpimg.imread(os.path.join(sup_path, "test_indoor.png"))
     
     T_filter = np.array(structure.T_color, float)
     R_filter = np.array(structure.R_color, float)
