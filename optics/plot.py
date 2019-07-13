@@ -1,4 +1,6 @@
 import matplotlib.pyplot as plt
+from skimage.io import imread
+from skimage.color import rgb2hsv, hsv2rgb
 import matplotlib.image as mpimg
 from matplotlib.figure import figaspect
 import numpy as np
@@ -162,26 +164,38 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
 
 def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     '''
-    Experimental. Lux ratio is is buggy
     Default outdoor lux is for AM1.5 and indoor lux for office lighting.
     See https://en.wikipedia.org/wiki/Daylight and https://en.wikipedia.org/wiki/Lux
     '''
     if not structure._color_calculated:
         structure.calculate_color()
         
-    T_image = mpimg.imread(os.path.join(sup_path, "test_outdoor.png"))
-    R_image = mpimg.imread(os.path.join(sup_path, "test_indoor.png"))
-    
+    T_image = imread(os.path.join(sup_path, "test_outdoor.png")) / 256.
+    R_image = imread(os.path.join(sup_path, "test_indoor.png")) / 256.
+
     T_filter = np.array(structure.T_color, float)
     R_filter = np.array(structure.R_color, float)
 
-    T_image_after = T_image * T_filter
-    R_image_after = R_image * R_filter 
+    T_image_coating = (T_image * T_filter)
+    R_image_coating = (R_image * R_filter)
+
     if outdoor_lux > indoor_lux:
-        R_image_after *= indoor_lux / outdoor_lux
+        lux_ratio = float(outdoor_lux) / indoor_lux
+        # Perception of brightness from Steven's Law
+        brightness_ratio = np.cbrt(lux_ratio)
+        R_image_coating_hsv = rgb2hsv(R_image_coating)
+        R_image_coating_hsv[:,:,2] /= brightness_ratio
+        R_image_coating = hsv2rgb(R_image_coating_hsv)
+        print not np.any(R_image_coating < 0)
     else:
-        T_image_after *= outdoor_lux / indoor_lux
-    overlay = T_image_after + R_image_after
+        lux_ratio = float(indoor_lux) / outdoor_lux
+        brightness_ratio = np.cbrt(lux_ratio)
+        T_image_coating_hsv = rgb=hsv(T_image_coating)
+        T_image_coating_hsv[:,:,2] /= brightness_ratio
+        T_image_coating = hsv2rgb(T_image_coating_hsv)
+        print not np.any(R_image_coating < 0)
+    overlay = T_image_coating + R_image_coating
+    print not(np.any(overlay < 0)), not(np.any(overlay > 1))
 
     f, ax = plt.subplots(nrows=1, ncols=1)
     f.suptitle(structure.label)
