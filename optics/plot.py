@@ -169,33 +169,28 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     '''
     if not structure._color_calculated:
         structure.calculate_color()
-        
-    T_image = imread(os.path.join(sup_path, "test_outdoor.png")) / 256.
-    R_image = imread(os.path.join(sup_path, "test_indoor.png")) / 256.
 
+    T_image_original = imread(os.path.join(sup_path, "test_outdoor.png")) / 256.
+    R_image_original = imread(os.path.join(sup_path, "test_indoor.png")) / 256.
+
+    # Assume outdoor photo taken at 109870 lux and indoor photo at 500 lux
+    # Scaling for the perception of brightness is from Steven's Law
+    T_brightness_ratio = np.cbrt(outdoor_lux / 109870.)
+    R_brightness_ratio = np.cbrt(indoor_lux / 500.)
+    T_image_hsv = rgb2hsv(T_image_original)
+    R_image_hsv = rgb2hsv(R_image_original)
+    T_image_hsv[:,:,2] *= T_brightness_ratio
+    R_image_hsv[:,:,2] *= R_brightness_ratio
+    T_image_hsv[T_image_hsv[:,:,2] > 1, 2] = 1.
+    R_image_hsv[R_image_hsv[:,:,2] > 1, 2] = 1.
+    T_image = hsv2rgb(T_image_hsv)
+    R_image = hsv2rgb(R_image_hsv)
+    
     T_filter = np.array(structure.T_color, float)
     R_filter = np.array(structure.R_color, float)
-
     T_image_coating = (T_image * T_filter)
     R_image_coating = (R_image * R_filter)
-
-    if outdoor_lux > indoor_lux:
-        lux_ratio = float(outdoor_lux) / indoor_lux
-        # Perception of brightness from Steven's Law
-        brightness_ratio = np.cbrt(lux_ratio)
-        R_image_coating_hsv = rgb2hsv(R_image_coating)
-        R_image_coating_hsv[:,:,2] /= brightness_ratio
-        R_image_coating = hsv2rgb(R_image_coating_hsv)
-        print not np.any(R_image_coating < 0)
-    else:
-        lux_ratio = float(indoor_lux) / outdoor_lux
-        brightness_ratio = np.cbrt(lux_ratio)
-        T_image_coating_hsv = rgb=hsv(T_image_coating)
-        T_image_coating_hsv[:,:,2] /= brightness_ratio
-        T_image_coating = hsv2rgb(T_image_coating_hsv)
-        print not np.any(R_image_coating < 0)
     overlay = T_image_coating + R_image_coating
-    print not(np.any(overlay < 0)), not(np.any(overlay > 1))
 
     f, ax = plt.subplots(nrows=1, ncols=1)
     f.suptitle(structure.label)
