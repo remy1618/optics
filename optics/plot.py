@@ -185,7 +185,7 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     R_image_hsv[R_image_hsv[:,:,2] > 1, 2] = 1.
     T_image = hsv2rgb(T_image_hsv)
     R_image = hsv2rgb(R_image_hsv)
-    
+
     T_filter = np.array(structure.T_color, float)
     R_filter = np.array(structure.R_color, float)
     T_image_coating = (T_image * T_filter)
