@@ -6,6 +6,7 @@ from matplotlib.figure import figaspect
 import numpy as np
 import structure as st
 import os.path
+import warnings
 # Append path to support files
 dir_path = os.path.dirname(os.path.realpath(__file__))
 sup_path = os.path.join(dir_path, "support_files")
@@ -162,7 +163,8 @@ def nk(layer_list, min_wl=None, max_wl=None, curves='nk', sep=False, unit='nm',
     plt.legend(loc=0)   # this gives error at the moment
     return None
 
-def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
+def view(structure, outdoor_lux=109870., indoor_lux=500.,
+         outdoor_image=False, indoor_image=False, show_original=False):
     '''
     Default outdoor lux is for AM1.5 and indoor lux for office lighting.
     See https://en.wikipedia.org/wiki/Daylight and https://en.wikipedia.org/wiki/Lux
@@ -170,8 +172,27 @@ def view(structure, outdoor_lux=109870., indoor_lux=500., show_original=False):
     if not structure._color_calculated:
         structure.calculate_color()
 
-    T_image_original = imread(os.path.join(sup_path, "test_outdoor.png")) / 256.
-    R_image_original = imread(os.path.join(sup_path, "test_indoor.png")) / 256.
+    if not outdoor_image:
+        T_image_original = imread(os.path.join(sup_path, "test_outdoor.png")) / 256.
+    else:
+        T_image_original = imread(outdoor_image) / 256.
+    if not indoor_image:
+        R_image_original = imread(os.path.join(sup_path, "test_indoor.png")) / 256.
+    else:
+        R_image_original = imread(indoor_image) / 256.
+    if not T_image_original.shape == R_image_original.shape:
+        T_width, T_height = T_image_original.shape[0], T_image_original.shape[1]
+        R_width, R_height = R_image_original.shape[0], R_image_original.shape[1]
+        warnings.simplefilter("always")
+        warnings.warn("Image dimensions do not match ({}x{} vs {}x{}). Images are \
+cropped around their centres.".format(T_width, T_height, R_width, R_height),
+Warning, stacklevel=2)
+        width = min(T_width, R_width)
+        height = min(T_height, R_height)
+        T_image_original = T_image_original[(T_width-width)/2:(T_width+width)/2,
+                                            (T_height-height)/2:(T_height+height)/2,:]
+        R_image_original = R_image_original[(R_width-width)/2:(R_width+width)/2,
+                                            (R_height-height)/2:(R_height+height)/2,:]
 
     # Assume outdoor photo taken at 109870 lux and indoor photo at 500 lux
     # Scaling for the perception of brightness is from Steven's Law
