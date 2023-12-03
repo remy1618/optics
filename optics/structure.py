@@ -1,5 +1,5 @@
 import numpy as np
-import calc
+from . import calc
 import os.path
 # Append path to support files
 dir_path = os.path.dirname(os.path.realpath(__file__))

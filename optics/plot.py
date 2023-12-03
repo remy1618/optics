@@ -4,7 +4,7 @@ from skimage.color import rgb2hsv, hsv2rgb
 import matplotlib.image as mpimg
 from matplotlib.figure import figaspect
 import numpy as np
-import structure as st
+from . import structure as st
 import os.path
 import warnings
 # Append path to support files

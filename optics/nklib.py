@@ -1,6 +1,6 @@
 import os.path
 import numpy as np
-import structure as st
+from . import structure as st
 
 
 material_list = [
