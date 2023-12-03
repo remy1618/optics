@@ -1,7 +1,7 @@
 from setuptools import setup
 
 setup(name='optics',
-      version='0.0.6',
+      version='0.0.7',
       description='Transfer matrix simulation of 1D optical multilayers',
       url='http://github.com/remy1618/optics',
       author='Remy Ko',
@@ -9,9 +9,10 @@ setup(name='optics',
       license='MIT',
       packages=['optics'],
       include_package_data=True,
-      python_requires='>=2.7, !=3.*, <4',
+      python_requires='>=2.7, <4',
       install_requires=[
           'numpy>=1.7',
           'matplotlib>=1.1',
-          'scikit-image>=0.14'
+          'scikit-image>=0.14',
+          'scipy'
       ])
