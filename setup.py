@@ -14,5 +14,5 @@ setup(name='optics',
           'numpy>=1.7',
           'matplotlib>=1.1',
           'scikit-image>=0.14',
-          'scipy'
+          'scipy >=1.2'
       ])

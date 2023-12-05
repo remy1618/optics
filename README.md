@@ -11,7 +11,7 @@
 - [NumPy](http://www.numpy.org/) Version 1.7.0 or newer
 - [matplotlib](http://matplotlib.org/) Version 1.1.0 or newer
 - [scikit-image] (https://scikit-image.org/) Version 0.14.2 or newer
-- [scipy] (https://scipy.org/)
+- [scipy] (https://scipy.org/) Version 1.2.1 or newer
 
 `optics` is an object-oriented and user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Through this, you can quickly find how the optical properties of your subtrate changes when a multilayered coating is applied on top. The object-oriented design is intentionally chosen to ease the usage and extension of the library. Rather than being a complicated calculator, `optics` provides a design and optimization platform. Shown below are examples of the typical usages of the library as well as its application to Solar Control Coatings and photonic crystals.
 
