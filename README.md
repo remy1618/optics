@@ -15,6 +15,9 @@
 
 `optics` is an object-oriented and user-friendly library that implements the transfer matrix method to simulate the optical far fields of multilayer thin films. Through this, you can quickly find how the optical properties of your subtrate changes when a multilayered coating is applied on top. The object-oriented design is intentionally chosen to ease the usage and extension of the library. Rather than being a complicated calculator, `optics` provides a design and optimization platform. Shown below are examples of the typical usages of the library as well as its application to Solar Control Coatings and photonic crystals.
 
+Example simulation dashboard built with optics as the base:
+![2024-02-15 00-41-55](https://github.com/remy1618/optics/assets/10491703/3bfae2de-9352-41c8-b2ae-96dc7a30a24b)
+
 -----------------------------------------------------------------
 
 The transfer matrix method characterizes each layer in a multilayer thin film by its thickness and spectral refractive index (nk). We have select materials with their nk values that we use often in the library.
